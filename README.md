@@ -9,7 +9,11 @@ Module descriptions
 
 ### Competition
 * create and manage competitions based on a matchplan
-* render competitions game plans and result tables
+* render competitions game plans and score tables
+
+### Betgame
+* users may predict results of a competition and will ear points for predictions (?algprithms)
+* generates ranking of user based on their current score
 
 ### Default matchplans
 * contains different example matchplans:
