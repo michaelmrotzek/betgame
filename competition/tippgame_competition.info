@@ -1,0 +1,11 @@
+name = "Tipp Game - Competition"
+description = ""
+package = "Tipp Game"
+core = "7.x"
+dependencies[] = "tippgame"
+dependencies[] = "tippgame_matchplan"
+configure = admin/config/tippgame/competition
+
+files[] = tests/tippgame_competition.test
+files[] = tests/tippgame_competition.table.test
+

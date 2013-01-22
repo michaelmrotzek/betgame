@@ -1,0 +1,367 @@
+<?php 
+
+/**
+ * Implements hook_schema().
+ */
+function tippgame_matchplan_schema() {
+  $schema['tippgame_matchplan'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'teams' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'groups' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'gamedays' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['tippgame_matchplan_fixture'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'matchplan' => array(
+        'type' => 'int',
+      ),
+      'fixturetype' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'gamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'returnmatchgamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'gamedayindex' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegroup' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegroupsetposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'guestgroup' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'guestgroupsetposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegroupresultposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'guestgroupresultposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'guestgamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+      'igamenumber' =>  array('gamenumber'),
+    ),
+    'unique keys' => array(
+      'matchplan_gamenumber' => array('matchplan', 'gamenumber')
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function tippgame_matchplan_install() {
+  tippgame_matchplan_update_7001();
+}
+
+/**
+ * Implements hook_update_N().
+ * 
+ * Install test tournament
+ */
+function tippgame_matchplan_update_7001() {
+  
+  module_load_include('php', 'tippgame_matchplan', 'lib/MatchPlanEntity');
+  
+  $m = new MatchPlan();
+  $m->setName('Tournament (8 teams, 2 groups)');
+  $m->setGroups(2);
+  $m->setTeams(8);
+  $m->setGamedays(5);
+  
+  $m_id = tippgame_matchplan_dao()->storeMatchPlan($m);
+  
+  $number = 0;
+  $gd = 1;
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setGuestgroup(1);
+  $f->setHomegroupsetposition(1);
+  $f->setGuestgroupsetposition(2);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setGuestgroup(1);
+  $f->setHomegroupsetposition(3);
+  $f->setGuestgroupsetposition(4);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setGuestgroup(2);
+  $f->setHomegroupsetposition(1);
+  $f->setGuestgroupsetposition(2);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setGuestgroup(2);
+  $f->setHomegroupsetposition(3);
+  $f->setGuestgroupsetposition(4);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  // 2
+  $gd = 2;
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setGuestgroup(1);
+  $f->setHomegroupsetposition(1);
+  $f->setGuestgroupsetposition(3);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setGuestgroup(1);
+  $f->setHomegroupsetposition(2);
+  $f->setGuestgroupsetposition(4);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setGuestgroup(2);
+  $f->setHomegroupsetposition(1);
+  $f->setGuestgroupsetposition(3);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setGuestgroup(2);
+  $f->setHomegroupsetposition(2);
+  $f->setGuestgroupsetposition(4);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  // 3
+  $gd = 3;
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setGuestgroup(1);
+  $f->setHomegroupsetposition(4);
+  $f->setGuestgroupsetposition(1);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setGuestgroup(1);
+  $f->setHomegroupsetposition(3);
+  $f->setGuestgroupsetposition(2);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setGuestgroup(2);
+  $f->setHomegroupsetposition(4);
+  $f->setGuestgroupsetposition(1);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $f = new FixtureGroupMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setGuestgroup(2);
+  $f->setHomegroupsetposition(3);
+  $f->setGuestgroupsetposition(2);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  // semi final
+  $gd = 4;
+  
+  $number++;
+  $sf1 = $number;
+  $f =new FixtureGroupPhaseResult();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(1);
+  $f->setHomegroupresultposition(1);
+  $f->setGuestgroup(2);
+  $f->setGuestgroupresultposition(2);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  $number++;
+  $sf2 = $number;
+  $f =new FixtureGroupPhaseResult();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegroup(2);
+  $f->setHomegroupresultposition(1);
+  $f->setGuestgroup(1);
+  $f->setGuestgroupresultposition(2);
+  
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+  // final
+  $gd = 5;
+  
+  $number++;
+  $f =new FixtureAllOrNothingMatch();
+  $f->setMatchplan($m_id);
+  $f->setGamenumber($number);
+  $f->setWeight($number);
+  $f->setGamedayindex($gd);
+  $f->setHomegamenumber($sf1);
+  $f->setGuestgamenumber($sf2);
+
+  tippgame_matchplan_dao()->storeFixture($f);
+  
+}
+
+
+
+
+

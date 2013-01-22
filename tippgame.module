@@ -1,0 +1,48 @@
+<?php 
+
+
+/**
+ * Implements hook_init().
+ */
+function tippgame_init() {
+  module_load_include('php', 'tippgame', 'lib/Entity');
+  module_load_include('php', 'tippgame', 'lib/EntityDao');
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function tippgame_menu() {
+  $items = array();
+
+  $items['admin/config/tippgame'] = array(
+    'title' => 'Tipp Game',
+    'description' => '',
+    'position' => 'right',
+    'weight' => -100,
+    'page callback' => 'system_admin_menu_block_page',
+    'page arguments' => array(),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system')
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function tippgame_permission() {
+  return array(
+    'access tippgame' => array(
+      'title' => t('Access tipp games'),
+      'description' => t(''),
+    ),
+    'administer tippgame' => array(
+      'title' => t('Administer tipp games'),
+      'description' => t(''),
+    ),
+  );
+}

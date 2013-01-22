@@ -1,0 +1,300 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function tippgame_competition_schema() {
+  // 
+  $schema['tippgame_competition'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'matchplan' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['tippgame_competition_group'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'shortname' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'competition' => array(
+        'type' => 'int',
+      ),
+      'weight' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['tippgame_competition_team'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'shortname' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'enblem' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'competition' => array(
+        'type' => 'int',
+      ),
+      'groupid' => array(
+        'type' => 'int',
+      ),
+      'initialsetposition' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['tippgame_competition_gameday'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'type' => 'int',
+      ),
+      'isallornothing' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'competition' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['tippgame_competition_match'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'gamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'kickoff' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'home' => array(
+        'type' => 'int',
+      ),
+      'hometeam' => array(
+        'type' => 'int',
+      ),
+      'guestteam' => array(
+        'type' => 'int',
+      ),
+      'location' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'returnmatchgamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'result' => array(
+        'type' => 'int',
+      ),
+      'competition' => array(
+        'type' => 'int',
+      ),
+      'groupid' => array(
+        'type' => 'int',
+      ),
+      'gameday' => array(
+        'type' => 'int',
+      ),
+      'placeholderhomeval' => array(
+        'type' => 'text',
+      ),
+      'placeholderguestval' => array(
+        'type' => 'text',
+      ),
+    ),
+    'indexes' => array(
+      'type' => array('type'),
+      'location' => array('location'),
+    ),
+    'unique keys' => array(
+      'competitiongamenumber' => array('competition', 'gamenumber'),
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['tippgame_competition_matchresult'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'matchid' => array(
+        'type' => 'int',
+      ),
+      'home' => array(
+        'type' => 'int',
+      ),
+      'guest' => array(
+        'type' => 'int',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['tippgame_competition_tabledata'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'groupid' => array(
+        'type' => 'int',
+      ),
+      'team' => array(
+        'type' => 'int',
+      ),
+      'position' => array(
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'goalsown' => array(
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'goalsagainst' => array(
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'points' => array(
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'matchesplayed' => array(
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+  
+  return $schema;
+}

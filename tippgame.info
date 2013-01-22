@@ -1,0 +1,5 @@
+name = "Tipp Game"
+description = ""
+package = "Tipp Game"
+core = "7.x"
+;dependencies[] = "tippgame"

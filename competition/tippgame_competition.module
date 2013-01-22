@@ -1,0 +1,566 @@
+<?php 
+
+
+/**
+ * Implements hook_init().
+ */
+function tippgame_competition_init() {
+  module_load_include('php', 'tippgame_competition', 'lib/CompetitionEntity');
+
+}
+
+function tippgame_competition_dao() {
+  module_load_include('php', 'tippgame_competition', 'lib/CompetitionDao');
+
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!isset($cache['Dao'])) {
+    $cache['Dao'] = new CompetitionDao();
+  }
+  return $cache['Dao'];
+}
+
+function tippgame_competition_controller() {
+  module_load_include('php', 'tippgame_competition', 'lib/CompetitionController');
+
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!isset($cache['Controller'])) {
+    $cache['Controller'] = new CompetitionController();
+    $cache['Controller']->setCompetitionDao(tippgame_competition_dao());
+    $cache['Controller']->setMatchplanDao(tippgame_matchplan_dao());
+  }
+  return $cache['Controller'];
+}
+
+/**
+ * Implements hook_menu().
+ */
+function tippgame_competition_menu() {
+  $items = array();
+
+  $path_pages = drupal_get_path('module', 'tippgame_competition') . '/pages';
+  $path_admin = drupal_get_path('module', 'tippgame_competition') . '/admin';
+  
+  $items['tippgame/competition/%competition'] = array(
+    'title callback' => '_tippgame_competition_page_competition_title',
+    'title arguments' => array(2),
+    'description' => '',
+    'page callback' => 'tippgame_competition_page_competition',
+    'page arguments' => array(2),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.pages.inc',
+    'file path' => $path_pages,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['tippgame/competition/%competition/admin'] = array(
+    'title' => 'Admin',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competitions_form'),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION,
+  );
+  
+  // admin
+  
+  $items['admin/config/tippgame/competition'] = array(
+    'title' => 'Competitions',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competitions_form'),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.admin.inc',
+    'file path' => $path_admin,
+  );
+  $items['admin/config/tippgame/competition/add'] = array(
+    'title' => 'Add Competition',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_edit_form'),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/edit'] = array(
+    'title' => 'Edit Competition',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_edit_form', 4),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/delete'] = array(
+    'title' => 'Delete Competition',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_delete_form', 4),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+
+  // GROUP
+  $items['admin/config/tippgame/competition/%competition/group'] = array(
+    'title' => 'Groups',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_groups_form', 4),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.group.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/group/add'] = array(
+    'title' => 'Add Group',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_group_edit_form', 4),
+    'access callback' => '_tippgame_competition_access_add_group',
+    'access arguments' => array(4),
+    'file' => 'tippgame_competition.group.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/tippgame/competition/%competition/group/%group/edit'] = array(
+    'title' => 'Edit Group',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_group_edit_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.group.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/group/%group/delete'] = array(
+    'title' => 'Delete Group',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_group_delete_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.group.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  
+  // TEAM
+  $items['admin/config/tippgame/competition/%competition/team'] = array(
+    'title' => 'Teams',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_teams_form', 4),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.team.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/team/add'] = array(
+    'title' => 'Add Team',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_team_edit_form', 4),
+    'access callback' => '_tippgame_competition_access_add_team',
+    'access arguments' => array(4),
+    'file' => 'tippgame_competition.team.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/tippgame/competition/%competition/team/%team/edit'] = array(
+    'title' => 'Edit Team',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_team_edit_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.team.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/team/%team/delete'] = array(
+    'title' => 'Delete Team',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_team_delete_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.team.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  
+  // GAMEDAY
+  $items['admin/config/tippgame/competition/%competition/gameday'] = array(
+    'title' => 'Gamedays',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_gamedays_form', 4),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.gameday.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/gameday/add'] = array(
+    'title' => 'Add Gameday',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_gameday_edit_form', 4),
+    'access callback' => '_tippgame_competition_access_add_gameday',
+    'access arguments' => array(4),
+    'file' => 'tippgame_competition.gameday.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/tippgame/competition/%competition/gameday/%gameday/edit'] = array(
+    'title' => 'Edit Gameday',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_gameday_edit_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.gameday.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/gameday/%gameday/delete'] = array(
+    'title' => 'Delete Gameday',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_gameday_delete_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.gameday.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  
+  // MATCH
+  $items['admin/config/tippgame/competition/%competition/match'] = array(
+    'title' => 'Matches',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_matchs_form', 4),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.match.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/match/add'] = array(
+    'title' => 'Add Match',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_match_edit_form', 4),
+    'access callback' => '_tippgame_competition_access_add_match',
+    'access arguments' => array(4),
+    'file' => 'tippgame_competition.match.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/tippgame/competition/%competition/match/generatefixtures'] = array(
+    'title' => 'Generate matches',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_generatefixtures_form', 4),
+    'access callback' => '_tippgame_competition_access_generatefixtures',
+    'access arguments' =>  array(4),
+    'file' => 'tippgame_competition.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/tippgame/competition/%competition/match/%match/edit'] = array(
+    'title' => 'Edit Match',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_match_edit_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.match.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  $items['admin/config/tippgame/competition/%competition/match/%match/delete'] = array(
+    'title' => 'Delete Match',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_match_delete_form', 4, 6),
+    'access arguments' => array('administer tippgame'),
+    'file' => 'tippgame_competition.match.admin.inc',
+    'file path' => $path_admin,
+    'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+  );
+  
+  // DEVEL_GENERATE
+  $items['admin/config/development/generate/tippgame'] = array(
+    'title' => 'Generate tippgames',
+    'description' => 'Generate a given number of tippgames.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tippgame_competition_devel_generate_content_form'),
+    'access callback' => '_tippgame_competition_access_devel',
+    'access arguments' => array(),
+    'file' => 'tippgame_competition.devel_generate.inc',
+  );
+  
+  
+  return $items;
+}
+
+function _tippgame_competition_access_devel() {
+  return module_exists('devel_generate') && user_access('administer tippgame');
+}
+
+function _tippgame_competition_access_generatefixtures(Competition $competition) {
+  return user_access('administer tippgame')
+  && tippgame_competition_controller()->isReadyForFixtureGeneration($competition->getId());
+}
+
+function _tippgame_competition_access_add_group(Competition $competition) {
+  return user_access('administer tippgame')
+  && !tippgame_competition_controller()->competitionGroupsComplete($competition->getId());
+}
+
+function _tippgame_competition_access_add_team(Competition $competition) {
+  return user_access('administer tippgame')
+  && !tippgame_competition_controller()->competitionTeamsComplete($competition->getId());
+}
+
+function _tippgame_competition_access_add_gameday(Competition $competition) {
+  return user_access('administer tippgame')
+  && !tippgame_competition_controller()->competitionGamedaysComplete($competition->getId());
+}
+
+function _tippgame_competition_access_add_match(Competition $competition) {
+  return FALSE;
+  //user_access('administer tippgame');
+  //&& !tippgame_competition_controller()->competitionGamedaysComplete($competition->getId());
+}
+
+/**
+ * Loader for menu placeholder.
+ *
+ * @param integer $id
+ *
+ * @return Competition or NULL
+ */
+function competition_load($id) {
+  return tippgame_competition_dao()->findCompetition($id);
+}
+
+/**
+ * Loader for menu placeholder.
+ *
+ * @param integer $id
+ *
+ * @return Team or NULL
+ */
+function team_load($id) {
+  return tippgame_competition_dao()->findTeam($id);
+}
+
+/**
+ * Loader for menu placeholder.
+ *
+ * @param integer $id
+ *
+ * @return Group or NULL
+ */
+function group_load($id) {
+  return tippgame_competition_dao()->findGroup($id);
+}
+
+/**
+ * Loader for menu placeholder.
+ *
+ * @param integer $id
+ *
+ * @return Gameday or NULL
+ */
+function gameday_load($id) {
+  return tippgame_competition_dao()->findGameday($id);
+}
+
+/**
+ * Loader for menu placeholder.
+ *
+ * @param integer $id
+ *
+ * @return Match or NULL
+ */
+function match_load($id) {
+  return tippgame_competition_dao()->findMatch($id);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function tippgame_competition_theme($existing, $type, $theme, $path) {
+  $path_admin = drupal_get_path('module', 'tippgame_competition') . '/admin';
+  $path_page = drupal_get_path('module', 'tippgame_competition') . '/pages';
+  
+  return array(
+    'tippgame_competition_matches' => array(
+      'variables' => array('matches' => NULL, 'useShortnames' => FALSE, 'showHeader' => TRUE, 'cols' => array()),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    'tippgame_competition_scoretable' => array(
+      'variables' => array('tabledata' => NULL, 'useShortnames' => FALSE, 'showHeader' => TRUE),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    'tippgame_competition_team' => array(
+      'variables' => array('team' => NULL, 'useShortname' => FALSE),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    'tippgame_competition_match_team' => array(
+      'variables' => array('match' => NULL, 'type' => 'home', 'useShortname' => FALSE),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    'tippgame_competition_team_placeholder' => array(
+      'variables' => array('placeholder' => NULL, 'competition_id' => NULL, 'useShortname' => FALSE),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    'tippgame_competition_match_result' => array(
+      'variables' => array('match' => NULL, 'showDetails' => TRUE),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    
+    'tippgame_competition_page_group' => array(
+      'template' => 'tippgame_competition_page_group',
+      'variables' => array(),
+      'file' => 'tippgame_competition.pages.inc',
+      'path' => $path_page,
+    ),
+    
+    /*
+     * ADMIN
+     */
+    
+    'tippgame_competition_admin_form_table' => array(
+      'render element' => 'data',
+      'file' => 'tippgame_competition.admin.theme.inc',
+      'path' => $path_admin,
+    ),
+    
+
+    'tippgame_competition_admin_form_matchs' => array(
+      'render element' => 'data',
+      'file' => 'tippgame_competition.match.admin.inc',
+      'path' => $path_admin,
+    )
+  );
+}
+
+function _tippgame_competition_page_competition_title(Competition $c) {
+  return t('@title', array('@title' => $c->getName()));
+  
+}
+
+/**
+ * Implements HOOK tippgame_entity_delete()
+ */
+function tippgame_competition_tippgame_entity_delete($entityclass, array $entity_ids) {
+  $f = 'onDelete' . $entityclass;
+  if(method_exists(tippgame_competition_controller(), $f)) {
+    tippgame_competition_controller()->$f($entity_ids);
+  }
+  
+}
+
+/**
+ * Implements HOOK hook_tippgame_entity_update()
+ */
+function tippgame_competition_tippgame_entity_update(IEntity $entity) {
+  if ($entity instanceof MatchResult) {
+    tippgame_competition_controller()->onMatchResultUpdated($entity);
+    
+  }
+}
+
+
+/**
+ * Get url of the current page.
+ *
+ * @param bool $absolute If TRUE return absolute url, else a relative to the base url.
+ *
+ * @return string Path
+ */
+function tippgame_competition_currenturl($absolute = FALSE) {
+  global $base_url, $base_path;
+
+  $uri = current_path();
+  $query = drupal_get_query_parameters();
+  if (!empty($query)) {
+    $uri .= '?' . drupal_http_build_query($query);
+  }
+
+  if($absolute) {
+    $uri = $base_url . $base_path . $uri;
+  }
+
+  return $uri;
+}
+
+function _tippgame_competition_select_gameday(Competition $competition) {
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!is_object($competition)) {
+    return array();
+  }
+  if(!isset($cache[$competition->getId()])) {
+    $gamedays = tippgame_competition_dao()->findGamedays($competition->getId());
+    foreach($gamedays as $gd) {
+      $cache[$competition->getId()][$gd->getId()] = $gd->getName();
+    }
+  }
+  return $cache[$competition->getId()];
+  
+}
+
+function _tippgame_competition_select_group(Competition $competition) {
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!is_object($competition)) {
+    return array();
+  }
+  if(!isset($cache[$competition->getId()])) {
+    $cache[$competition->getId()][] = t('<None>');
+    $groups = tippgame_competition_dao()->findGroups($competition->getId());
+    foreach($groups as $g) {
+      $cache[$competition->getId()][$g->getId()] = $g->getName();
+    }
+  }
+  return $cache[$competition->getId()];
+
+}
+
+function _tippgame_competition_select_team(Competition $competition) {
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!is_object($competition)) {
+    return array();
+  }
+  if(!isset($cache[$competition->getId()])) {
+    $cache[$competition->getId()][] = t('<None>');
+    $teams = tippgame_competition_dao()->findTeams($competition->getId());
+    foreach($teams as $t) {
+      $cache[$competition->getId()][$t->getId()] = $t->getName();
+    }
+  }
+  return $cache[$competition->getId()];
+
+}
+
+function _tippgame_competition_select_match(Competition $competition) {
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!is_object($competition)) {
+    return array();
+  }
+  if(!isset($cache[$competition->getId()])) {
+    $cache[$competition->getId()][] = t('<None>');
+    $matches = tippgame_competition_dao()->findMatchs($competition->getId());
+    foreach($matches as $m) {
+      $cache[$competition->getId()][$m->getId()] = $m->getGamenumber();
+    }
+  }
+  return $cache[$competition->getId()];
+
+}

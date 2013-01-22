@@ -1,0 +1,472 @@
+<?php 
+
+class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
+  protected $privileged_user;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Tippgame Competition table related unit tests',
+      'description' => 'Test that table calculation works properly.',
+      'group' => 'Tippgame',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('tippgame', 'tippgame_matchplan', 'tippgame_competition');
+
+    //$this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer tippgame', 'access tippgame'));
+    //$this->drupalLogin($this->privileged_user);
+  }
+
+  public function testTableCalculation() {
+    $matchplan_id = $this->_createSimpleRoundRobinMatchplan();
+    $this->assertNotNull($matchplan_id);
+
+    $c = new Competition();
+    $c->setName("Test Competition");
+    $c->setMatchplan($matchplan_id);
+
+    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $this->assertNotNull($competition_id);
+
+    // generate default data and matches
+    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    tippgame_competition_controller()->generateMatches($competition_id);
+
+    // data for checks
+    $group = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $group_id = $group->getId();
+
+    $team1 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
+    $team1_id = $team1->getId();
+
+    $team2 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
+    $team2_id = $team2->getId();
+
+    $team3 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 3);
+    $team3_id = $team3->getId();
+
+    $team4 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 4);
+    $team4_id = $team4->getId();
+
+    /*
+     * add match results and test calculation
+    */
+
+    // test calculation after first result
+    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    tippgame_competition_controller()->setResult($match1, 1, 0);
+
+    $tabledata = NULL;
+    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $this->assertEqual(4, count($tabledata));
+
+    $t1 = array_shift($tabledata);
+    $this->assertEqual($team1->getId(), $t1->team);
+    $this->assertEqual($group_id, $t1->groupid);
+    $this->assertEqual(1, $t1->position);
+    $this->assertEqual(1, $t1->matchesplayed);
+    $this->assertEqual(1, $t1->goalsown);
+    $this->assertEqual(0, $t1->goalsagainst);
+    $this->assertEqual(3, $t1->points);
+
+    $t2 = array_shift($tabledata);
+    $this->assertEqual($team3->getId(), $t2->team);
+    $this->assertEqual($group_id, $t2->groupid);
+    $this->assertEqual(2, $t2->position);
+    $this->assertEqual(0, $t2->matchesplayed);
+    $this->assertEqual(0, $t2->goalsown);
+    $this->assertEqual(0, $t2->goalsagainst);
+    $this->assertEqual(0, $t2->points);
+
+    $t3 = array_shift($tabledata);
+    $this->assertEqual($team4->getId(), $t3->team);
+    $this->assertEqual($group_id, $t3->groupid);
+    $this->assertEqual(3, $t3->position);
+    $this->assertEqual(0, $t3->matchesplayed);
+    $this->assertEqual(0, $t3->goalsown);
+    $this->assertEqual(0, $t3->goalsagainst);
+    $this->assertEqual(0, $t3->points);
+
+    $t4 = array_shift($tabledata);
+    $this->assertEqual($team2->getId(), $t4->team);
+    $this->assertEqual($group_id, $t4->groupid);
+    $this->assertEqual(4, $t4->position);
+    $this->assertEqual(1, $t4->matchesplayed);
+    $this->assertEqual(0, $t4->goalsown);
+    $this->assertEqual(1, $t4->goalsagainst);
+    $this->assertEqual(0, $t4->points);
+
+    // test calculation after second result
+    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    tippgame_competition_controller()->setResult($match2, 2, 2);
+
+    $tabledata = NULL;
+    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $this->assertEqual(4, count($tabledata));
+
+    $t1 = array_shift($tabledata);
+    $this->assertEqual($team1->getId(), $t1->team);
+    $this->assertEqual($group_id, $t1->groupid);
+    $this->assertEqual(1, $t1->position);
+    $this->assertEqual(1, $t1->matchesplayed);
+    $this->assertEqual(1, $t1->goalsown);
+    $this->assertEqual(0, $t1->goalsagainst);
+    $this->assertEqual(3, $t1->points);
+
+    $t2 = array_shift($tabledata);
+    $this->assertEqual($team3->getId(), $t2->team);
+    $this->assertEqual($group_id, $t2->groupid);
+    $this->assertEqual(2, $t2->position);
+    $this->assertEqual(1, $t2->matchesplayed);
+    $this->assertEqual(2, $t2->goalsown);
+    $this->assertEqual(2, $t2->goalsagainst);
+    $this->assertEqual(1, $t2->points);
+
+    $t3 = array_shift($tabledata);
+    $this->assertEqual($team4->getId(), $t3->team);
+    $this->assertEqual($group_id, $t3->groupid);
+    $this->assertEqual(3, $t3->position);
+    $this->assertEqual(1, $t3->matchesplayed);
+    $this->assertEqual(2, $t3->goalsown);
+    $this->assertEqual(2, $t3->goalsagainst);
+    $this->assertEqual(1, $t3->points);
+
+    $t4 = array_shift($tabledata);
+    $this->assertEqual($team2->getId(), $t4->team);
+    $this->assertEqual($group_id, $t4->groupid);
+    $this->assertEqual(4, $t4->position);
+    $this->assertEqual(1, $t4->matchesplayed);
+    $this->assertEqual(0, $t4->goalsown);
+    $this->assertEqual(1, $t4->goalsagainst);
+    $this->assertEqual(0, $t4->points);
+
+    // points equal, goal diff
+    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    $this->assertTrue(tippgame_competition_controller()->setResult($match1, 1, 0));
+    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    $this->assertTrue(tippgame_competition_controller()->setResult($match2, 3, 1));
+
+    $tabledata = NULL;
+    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $this->assertEqual(4, count($tabledata));
+    $this->verbose('points equal, goal diff: ' . var_export($tabledata, TRUE));
+
+    $t1 = array_shift($tabledata);
+    $this->assertEqual($team3->getId(), $t1->team);
+    $t2 = array_shift($tabledata);
+    $this->assertEqual($team1->getId(), $t2->team);
+    $t3 = array_shift($tabledata);
+    $this->assertEqual($team2->getId(), $t3->team);
+    $t4 = array_shift($tabledata);
+    $this->assertEqual($team4->getId(), $t4->team);
+
+    // points equal, same goal diff, more own goals
+    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    tippgame_competition_controller()->setResult($match1, 1, 0);
+    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    tippgame_competition_controller()->setResult($match2, 3, 2);
+
+    $tabledata = NULL;
+    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $this->assertEqual(4, count($tabledata));
+    $this->verbose('points equal, same goal diff, more own goals: ' . var_export($tabledata, TRUE));
+
+    $t1 = array_shift($tabledata);
+    $this->assertEqual($team3->getId(), $t1->team);
+    $t2 = array_shift($tabledata);
+    $this->assertEqual($team1->getId(), $t2->team);
+    $t3 = array_shift($tabledata);
+    $this->assertEqual($team4->getId(), $t3->team);
+    $t4 = array_shift($tabledata);
+    $this->assertEqual($team2->getId(), $t4->team);
+
+    // test calculation after adding a result to second gameday
+    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    tippgame_competition_controller()->setResult($match1, 1, 0);
+    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    tippgame_competition_controller()->setResult($match2, 2, 2);
+
+    $match3 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 3);
+    tippgame_competition_controller()->setResult($match3, 2, 1);
+
+    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+
+    $this->assertEqual(4, count($tabledata));
+
+    $t1 = array_shift($tabledata);
+    $this->assertEqual($team1->getId(), $t1->team);
+    $this->assertEqual($group_id, $t1->groupid);
+    $this->assertEqual(1, $t1->position);
+    $this->assertEqual(2, $t1->matchesplayed);
+    $this->assertEqual(3, $t1->goalsown);
+    $this->assertEqual(1, $t1->goalsagainst);
+    $this->assertEqual(6, $t1->points);
+
+    $t2 = array_shift($tabledata);
+    $this->assertEqual($team4->getId(), $t2->team);
+    $this->assertEqual($group_id, $t2->groupid);
+    $this->assertEqual(2, $t2->position);
+    $this->assertEqual(1, $t2->matchesplayed);
+    $this->assertEqual(2, $t2->goalsown);
+    $this->assertEqual(2, $t2->goalsagainst);
+    $this->assertEqual(1, $t2->points);
+
+    $t3 = array_shift($tabledata);
+    $this->assertEqual($team3->getId(), $t3->team);
+    $this->assertEqual($group_id, $t3->groupid);
+    $this->assertEqual(3, $t3->position);
+    $this->assertEqual(2, $t3->matchesplayed);
+    $this->assertEqual(3, $t3->goalsown);
+    $this->assertEqual(4, $t3->goalsagainst);
+    $this->assertEqual(1, $t3->points);
+
+    $t4 = array_shift($tabledata);
+    $this->assertEqual($team2->getId(), $t4->team);
+    $this->assertEqual($group_id, $t4->groupid);
+    $this->assertEqual(4, $t4->position);
+    $this->assertEqual(1, $t4->matchesplayed);
+    $this->assertEqual(0, $t4->goalsown);
+    $this->assertEqual(1, $t4->goalsagainst);
+    $this->assertEqual(0, $t4->points);
+  }
+
+  function testfindMatchByTeamsGroup() {
+    $matchplan_id = $this->_createSimpleRoundRobinMatchplan();
+    $this->assertNotNull($matchplan_id);
+
+    $c = new Competition();
+    $c->setName("Test Competition");
+    $c->setMatchplan($matchplan_id);
+
+    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $this->assertNotNull($competition_id);
+
+    // generate default data and matches
+    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    tippgame_competition_controller()->generateMatches($competition_id);
+
+    // data for checks
+    $group = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $group_id = $group->getId();
+
+    $team1 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
+    $team1_id = $team1->getId();
+
+    $team2 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
+    $team2_id = $team2->getId();
+
+    $team3 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 3);
+    $team3_id = $team3->getId();
+
+    $team4 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 4);
+    $team4_id = $team4->getId();
+
+    // test get group match by teams
+
+    $match = tippgame_competition_dao()->findMatchByTeamsGroup($group_id, $team1_id, $team3_id);
+    $this->assertNotNull($match);
+    if($match) {
+      $this->assertEqual(3, $match->getGamenumber());
+    }
+
+    $match = NULL;
+    // order is not important, so we expect the same result
+    $match = tippgame_competition_dao()->findMatchByTeamsGroup($group_id, $team3_id, $team1_id);
+    $this->assertNotNull($match);
+    if($match) {
+      $this->assertEqual(3, $match->getGamenumber());
+    }
+  }
+
+  function testGetWinner() {
+    $matchplan = new MatchPlan();
+    $matchplan->setName('Simple KO-Matchplan');
+    $matchplan->setTeams(2);
+    $matchplan->setGroups(1);
+    $matchplan->setGamedays(1);
+
+    $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+
+    $gd = 1;
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(1);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(1);
+    $f->setGuestgroupsetposition(2);
+    $f->setReturnmatchgamenumber(2);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(2);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(2);
+    $f->setGuestgroupsetposition(1);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $c = new Competition();
+    $c->setName("Test KO-Competition");
+    $c->setMatchplan($matchplan_id);
+
+    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $this->assertNotNull($competition_id);
+
+    // generate default data and matches
+    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    tippgame_competition_controller()->generateMatches($competition_id);
+
+    // data for checks
+    $group = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $group_id = $group->getId();
+
+    $team1 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
+    $team1_id = $team1->getId();
+
+    $team2 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
+    $team2_id = $team2->getId();
+
+    // tests
+    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    $this->assertNotNull($match1);
+    $this->assertEqual(1, $match1->getGamenumber());
+    $this->assertEqual(2, $match1->getReturnmatchgamenumber());
+
+    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    $this->verbose('match2: ' . var_export($match2, TRUE));
+    $this->assertNotNull($match2);
+    $this->assertEqual(2, $match2->getGamenumber());
+    $this->assertEqual(1, $match2->getReturnmatchgamenumber());
+
+    // points equal, same goal diff, more own goals
+    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+
+    // no result yet
+    $this->assertNull(tippgame_competition_controller()->getWinner($match1));
+
+    // only one result
+    tippgame_competition_controller()->setResult($match1, 1, 0);
+    $this->assertNull(tippgame_competition_controller()->getWinner($match1));
+    $this->assertNull(tippgame_competition_controller()->getWinner($match2));
+
+    // draw, but team1 has scored more goals as guest
+    tippgame_competition_controller()->setResult($match2, 3, 2);
+    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match2));
+
+    // team1 wins both
+    tippgame_competition_controller()->setResult($match1, 2, 1);
+    tippgame_competition_controller()->setResult($match2, 1, 2);
+    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match2));
+
+    // team1 wins
+    tippgame_competition_controller()->setResult($match1, 1, 1);
+    tippgame_competition_controller()->setResult($match2, 1, 0);
+    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match2));
+
+    // draw, but team2 has scored more goals as guest
+    tippgame_competition_controller()->setResult($match1, 1, 1);
+    tippgame_competition_controller()->setResult($match2, 0, 0);
+    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match2));
+  }
+
+  /**
+   * Creates a simple round robin matchplan with 4 teams playing all against all.
+   *
+   *  @return integer Maptchplan ID
+   */
+  private function _createSimpleRoundRobinMatchplan() {
+    $matchplan = new MatchPlan();
+    $matchplan->setName('Simple Matchplan');
+    $matchplan->setTeams(4);
+    $matchplan->setGroups(1);
+    $matchplan->setGamedays(3);
+
+    $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+
+    $gd = 1;
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(1);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(1);
+    $f->setGuestgroupsetposition(2);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(2);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(3);
+    $f->setGuestgroupsetposition(4);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $gd++;
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(3);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(1);
+    $f->setGuestgroupsetposition(3);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(4);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(2);
+    $f->setGuestgroupsetposition(4);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $gd++;
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(5);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(4);
+    $f->setGuestgroupsetposition(1);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    $f = new FixtureGroupMatch();
+    $f->setMatchplan($matchplan_id);
+    $f->setGamenumber(6);
+    $f->setWeight($gd);
+    $f->setGamedayindex($gd);
+    $f->setHomegroup(1);
+    $f->setGuestgroup(1);
+    $f->setHomegroupsetposition(3);
+    $f->setGuestgroupsetposition(2);
+    tippgame_matchplan_dao()->storeFixture($f);
+
+    return $matchplan_id;
+  }
+
+
+
+}

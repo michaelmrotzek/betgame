@@ -1,0 +1,63 @@
+<?php 
+
+class TippgameMatchplanTestCase extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Tippgame Match Plan unit tests',
+      'description' => 'Test that MatchPlan works properly.',
+      'group' => 'Tippgame',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('tippgame', 'tippgame_matchplan');
+
+    $this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer tippgame'));
+    $this->drupalLogin($this->privileged_user);
+
+  }
+
+  public function testDaoInstantiation() {
+    $Dao = tippgame_matchplan_dao();
+    $this->assertNotNull($Dao);
+
+  }
+
+  public function testCreate() {
+
+    $matchplan = new MatchPlan();
+    $matchplan->setName('Test Matchplan 1');
+    $matchplan->setTeams(16);
+    $matchplan->setGroups(1);
+    $matchplan->setGamedays(30);
+
+    $Dao = tippgame_matchplan_dao();
+    $Dao->storeMatchPlan($matchplan);
+
+    $this->assertNotNull($Dao);
+
+  }
+
+  public function testCreateAndFind() {
+    $Dao = tippgame_matchplan_dao();
+    $plans = $Dao->findMatchPlans();
+    $defaultplans = count($plans);
+    
+    $matchplan = new MatchPlan();
+    $matchplan->setName('Test Matchplan 1');
+    $matchplan->setTeams(16);
+    $matchplan->setGroups(1);
+    $matchplan->setGamedays(30);
+
+    $Dao->storeMatchPlan($matchplan);
+
+    $plans = $Dao->findMatchPlans();
+    $this->assertFalse(empty($plans));
+
+    $this->assertEqual(count($plans)-$defaultplans, 1);
+
+  }
+
+
+}
