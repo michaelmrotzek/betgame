@@ -446,12 +446,12 @@ class CompetitionController {
         }
 
         $type = $fixture->getFixturetype();
-
+        
         if ($type === 'FixtureGroupMatch') {
           $fixture = EntityHelper::array2object((array)$fixture, 'FixtureGroupMatch');
 
           $group = $this->getGroupByIndex($competition_id, $fixture->getHomegroup());
-          $gameday = $this->getGamedayByIndex($competition_id, $fixture->getGamedayindex());
+          $gameday = $this->getGamedayByIndex($competition_id, $fixture->getGamedayindex());     
           $hometeam = $this->getTeamByIndex($competition_id, $group->getId(), $fixture->getHomegroupsetposition());
           $guesteam = $this->getTeamByIndex($competition_id, $group->getId(), $fixture->getGuestgroupsetposition());
 
@@ -465,6 +465,12 @@ class CompetitionController {
 
           $gameday = $this->getGamedayByIndex($competition_id, $fixture->getGamedayindex());
           $m->setGameday($gameday->getId());
+          
+          if(!$gameday->getIsallornothing()) {
+            // set gameday to all or nothing if not already done
+            $gameday->setIsallornothing(1);
+            tippgame_competition_dao()->storeGameday($gameday);
+          }
 
           $homeplaceholder = new PlaceholderGroupResult();
           $homeplaceholder->groupindex = $fixture->getHomegroup();
@@ -481,6 +487,12 @@ class CompetitionController {
 
           $gameday = $this->getGamedayByIndex($competition_id, $fixture->getGamedayindex());
           $m->setGameday($gameday->getId());
+          
+          if(!$gameday->getIsallornothing()) {
+            // set gameday to all or nothing if not already done
+            $gameday->setIsallornothing(1);
+            tippgame_competition_dao()->storeGameday($gameday);
+          }
 
           $homeplaceholder = new PlaceholderGameResult();
           $homeplaceholder->gamenumber = $fixture->getHomegamenumber();
@@ -730,7 +742,7 @@ class CompetitionController {
     foreach($match_ids as $match_id) {
       $result = $this->cCompetition->findMatchResult($match_id);
       if($result) {
-        $this->cCompetition->deleteEntities('MatchResult', $result->getId());
+        $this->cCompetition->deleteEntities('MatchResult', array($result->getId()));
       }
 
 

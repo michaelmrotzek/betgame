@@ -1,5 +1,5 @@
-name = "Tipp Game - Matchplan Module"
-description = ""
+name = "Betgame - Matchplan"
+description = "Module to generate tournament matchplans"
 package = "Tipp Game"
 core = "7.x"
 dependencies[] = "tippgame"

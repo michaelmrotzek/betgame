@@ -37,7 +37,7 @@ function tippgame_competition_devel_generate_content_form_validate($form_id, &$f
  */
 function tippgame_competition_devel_generate_content_form_submit($form_id, &$form_state) {
   $values = $form_state['values'];
-  $num = $values['matchplan'];
+  $num = $values['num'];
   if($values['matchplan'] > 0 && $num > 0) {
     tippgame_competition_devel_generate_competition_add($values['matchplan'], $num);
 

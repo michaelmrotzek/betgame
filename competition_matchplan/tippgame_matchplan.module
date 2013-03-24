@@ -1,5 +1,12 @@
 <?php 
 
+/*
+ * API to create generic tournament matchplans.
+ * 
+ * Currently it only offers a programatically interface to create a matchplan - 
+ * see implemented update hooks.
+ */
+
 /**
  * Implements hook_init().
  */
@@ -19,6 +26,7 @@ function tippgame_matchplan_dao() {
 
 /**
  * Implements hook_menu().
+ * 
  */
 function tippgame_matchplan_menu() {
   $items = array();
@@ -32,6 +40,8 @@ function tippgame_matchplan_menu() {
     'file' => 'tippgame_matchplan.admin.inc',
   );
   
+  // currently not supported
+  /* 
   $items['admin/config/tippgame/matchplan/add'] = array(
     'title' => 'Add Matchplan',
     'description' => '',
@@ -51,6 +61,7 @@ function tippgame_matchplan_menu() {
     'file' => 'tippgame_matchplan.admin.inc',
     'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
   );
+  */
 
   return $items;
 }
