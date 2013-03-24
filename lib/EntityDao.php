@@ -152,7 +152,7 @@ abstract class AbstractEntityDao {
 
       if($beforeEntity != $entity) {
         // only call update hook if data have been changed
-        module_invoke_all('tippgame_entity_update', $entity);
+        module_invoke_all('betgame_entity_update', $entity);
       }
       
       return $entity->getId();
@@ -198,7 +198,7 @@ abstract class AbstractEntityDao {
 
       $query->execute();
       
-      module_invoke_all('tippgame_entity_delete', $classname, $ids);
+      module_invoke_all('betgame_entity_delete', $classname, $ids);
 
       return TRUE;
 

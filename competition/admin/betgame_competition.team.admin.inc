@@ -1,7 +1,7 @@
 <?php 
 
 
-function _tippgame_competition_team_form(Competition $competition, Team $team, $viewmode = 'row') {
+function _betgame_competition_team_form(Competition $competition, Team $team, $viewmode = 'row') {
   $form = array();
 
   $detailed = (bool)($viewmode=='detail');
@@ -55,7 +55,7 @@ function _tippgame_competition_team_form(Competition $competition, Team $team, $
 /**
  * Implements hook_form().
  */
-function tippgame_competition_teams_form($form, &$form_state, Competition $competition) {
+function betgame_competition_teams_form($form, &$form_state, Competition $competition) {
   $form = array();
 
   if(!$competition) {
@@ -71,7 +71,7 @@ function tippgame_competition_teams_form($form, &$form_state, Competition $compe
 
   $form['data'] = array(
     '#tree' => TRUE,
-    '#theme' => 'tippgame_competition_admin_form_table',
+    '#theme' => 'betgame_competition_admin_form_table',
     '#c_render_options' => array(
       'entityname' => 'team',
       'colsheader' => array(
@@ -88,19 +88,19 @@ function tippgame_competition_teams_form($form, &$form_state, Competition $compe
     ),
   );
 
-  $teams = tippgame_competition_dao()->findTeams($competition->getId());
+  $teams = betgame_competition_dao()->findTeams($competition->getId());
   foreach($teams as $team) {
     $delta = $team->getId();
 
-    $form['data'][$delta] = _tippgame_competition_team_form($competition, $team);
+    $form['data'][$delta] = _betgame_competition_team_form($competition, $team);
      
     $form['data'][$delta]['actions']['edit'] = array(
-      '#markup' => l(t('Edit'), 'admin/config/tippgame/competition/'.$competition->getId().'/team/'.$team->getId().'/edit'),
+      '#markup' => l(t('Edit'), 'admin/config/betgame/competition/'.$competition->getId().'/team/'.$team->getId().'/edit'),
       '#prefix' => '<div class="action">',
       '#suffix' => '</div>',
     );
     $form['data'][$delta]['actions']['delete'] = array(
-      '#markup' => l(t('Delete'), 'admin/config/tippgame/competition/'.$competition->getId().'/team/'.$team->getId().'/delete'),
+      '#markup' => l(t('Delete'), 'admin/config/betgame/competition/'.$competition->getId().'/team/'.$team->getId().'/delete'),
       '#prefix' => '<div class="action">',
       '#suffix' => '</div>',
     );
@@ -115,18 +115,18 @@ function tippgame_competition_teams_form($form, &$form_state, Competition $compe
   return $form;
 }
 
-function tippgame_competition_teams_form_submit($form, &$form_state) {
+function betgame_competition_teams_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition';
+  $form_state['redirect'] = 'admin/config/betgame/competition';
 
   if(isset($values['data'])) {
     foreach($values['data'] as $data) {
       $competition_id = $data['competition'];
       $team = EntityHelper::array2object($data, 'Team');
-      tippgame_competition_dao()->storeTeam($team);
+      betgame_competition_dao()->storeTeam($team);
     }
     drupal_set_message(t('Teams updated'));
-    $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/team';
+    $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/team';
 
   } else {
     drupal_set_message(t('Error while updating'), 'error');
@@ -137,7 +137,7 @@ function tippgame_competition_teams_form_submit($form, &$form_state) {
 /**
  * Implements hook_form().
  */
-function tippgame_competition_team_edit_form($form, &$form_state, Competition $competition, Team $team = NULL) {
+function betgame_competition_team_edit_form($form, &$form_state, Competition $competition, Team $team = NULL) {
   $form = array();
 
   if(!$competition) {
@@ -145,14 +145,14 @@ function tippgame_competition_team_edit_form($form, &$form_state, Competition $c
     return $form;
   }
 
-  $title = t('Create new Team', array(), array('context' => 'tippgame'));
+  $title = t('Create new Team', array(), array('context' => 'betgame'));
   if($team) {
-    $title = t('Edit Team', array(), array('context' => 'tippgame'));
+    $title = t('Edit Team', array(), array('context' => 'betgame'));
   }
 
   drupal_set_title($title);
 
-  $form = _tippgame_competition_team_form($competition, $team, 'detail');
+  $form = _betgame_competition_team_form($competition, $team, 'detail');
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -160,18 +160,18 @@ function tippgame_competition_team_edit_form($form, &$form_state, Competition $c
     '#value' => t('Save'),
   );
   $form['actions']['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'admin/config/tippgame/competition/'.$competition->getId().'/team'),
+    '#markup' => l(t('Cancel'), 'admin/config/betgame/competition/'.$competition->getId().'/team'),
   );
 
   return $form;
 }
 
-function tippgame_competition_team_edit_form_submit($form, &$form_state) {
+function betgame_competition_team_edit_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$values['competition'].'/team';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$values['competition'].'/team';
 
   $team = EntityHelper::array2object($values, 'Team');
-  tippgame_competition_dao()->storeTeam($team);
+  betgame_competition_dao()->storeTeam($team);
 
   drupal_set_message(t('Team saved'));
 
@@ -182,7 +182,7 @@ function tippgame_competition_team_edit_form_submit($form, &$form_state) {
  *
  * Admin delete team.
  */
-function tippgame_competition_team_delete_form($form, &$form_state, $competition, $team) {
+function betgame_competition_team_delete_form($form, &$form_state, $competition, $team) {
   if(is_object($competition) && is_object($team)) {
 
     $form['#competition_id'] = $competition->getId();
@@ -191,7 +191,7 @@ function tippgame_competition_team_delete_form($form, &$form_state, $competition
     return confirm_form(
         $form,
         t('Are you sure you want to delete team %title?', array('%title' => $team->getName())),
-        'admin/config/tippgame/competition/'.$competition->getId().'/team',
+        'admin/config/betgame/competition/'.$competition->getId().'/team',
         t('Note: This action cannot be undone.'),
         t('Delete'),
         t('Cancel'),
@@ -201,12 +201,12 @@ function tippgame_competition_team_delete_form($form, &$form_state, $competition
   }
 }
 
-function tippgame_competition_team_delete_form_submit($form, &$form_state) {
+function betgame_competition_team_delete_form_submit($form, &$form_state) {
   $competition_id = $form['#competition_id'];
   $team_id = $form['#team_id'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/team';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/team';
 
-  if(tippgame_competition_dao()->deleteTeam($team_id)) {
+  if(betgame_competition_dao()->deleteTeam($team_id)) {
     drupal_set_message(t('Team deleted'));
   } else {
     drupal_set_message(t('Error occured while deleting team'));

@@ -1,19 +1,19 @@
 <?php 
 
-require_once(drupal_get_path('module', 'tippgame') . '/lib/EntityDao.php');
-require_once(drupal_get_path('module', 'tippgame_competition') . '/lib/CompetitionEntity.php');
+require_once(drupal_get_path('module', 'betgame') . '/lib/EntityDao.php');
+require_once(drupal_get_path('module', 'betgame_competition') . '/lib/CompetitionEntity.php');
 
 class CompetitionDao extends AbstractEntityDao {
 
   function entityTableMap() {
     return array(
-      'Competition' => 'tippgame_competition',
-      'Group' => 'tippgame_competition_group',
-      'Team' => 'tippgame_competition_team',
-      'Gameday' => 'tippgame_competition_gameday',
-      'Match' => 'tippgame_competition_match',
-      'MatchResult' => 'tippgame_competition_matchresult',
-      'Tabledata' => 'tippgame_competition_tabledata',
+      'Competition' => 'betgame_competition',
+      'Group' => 'betgame_competition_group',
+      'Team' => 'betgame_competition_team',
+      'Gameday' => 'betgame_competition_gameday',
+      'Match' => 'betgame_competition_match',
+      'MatchResult' => 'betgame_competition_matchresult',
+      'Tabledata' => 'betgame_competition_tabledata',
     );
   }
 

@@ -1,6 +1,6 @@
 <?php 
 
-function tippgame_competition_page_competition(Competition $competition) {
+function betgame_competition_page_competition(Competition $competition) {
   $ra = array();
 
   if(!$competition) {
@@ -8,7 +8,7 @@ function tippgame_competition_page_competition(Competition $competition) {
     return $ra;
   }
 
-  $groups = tippgame_competition_dao()->findGroups($competition->getId());
+  $groups = betgame_competition_dao()->findGroups($competition->getId());
   if(!empty($groups)) {
     // only show if more than one group
 
@@ -26,7 +26,7 @@ function tippgame_competition_page_competition(Competition $competition) {
         );
       }
 
-      $matches = tippgame_competition_dao()->findMatchsByGroup($group_id);
+      $matches = betgame_competition_dao()->findMatchsByGroup($group_id);
       $ra['groups'][$group_id]['matches'] = array(
         '#matches' => $matches,
         '#cols' => array(
@@ -34,14 +34,14 @@ function tippgame_competition_page_competition(Competition $competition) {
         ),
         '#showHeader' => FALSE,
         '#useShortnames' => FALSE,
-        '#theme' => 'tippgame_competition_matches',
+        '#theme' => 'betgame_competition_matches',
       );
 
-      $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+      $tabledata = betgame_competition_controller()->calculateTable($group_id);
       $ra['groups'][$group_id]['table'] = array(
         '#tabledata' => $tabledata,
         '#useShortnames' => FALSE,
-        '#theme' => 'tippgame_competition_scoretable',
+        '#theme' => 'betgame_competition_scoretable',
       );
 
     }
@@ -49,7 +49,7 @@ function tippgame_competition_page_competition(Competition $competition) {
   }
 
   // render knockout matches by gameday
-  $knockoutgamedays = tippgame_competition_dao()->findGamedaysKnockoutPhase($competition->getId());
+  $knockoutgamedays = betgame_competition_dao()->findGamedaysKnockoutPhase($competition->getId());
   if($knockoutgamedays) {
     foreach($knockoutgamedays as $gameday) {
       $gameday_id = $gameday->getId();
@@ -59,7 +59,7 @@ function tippgame_competition_page_competition(Competition $competition) {
         '#suffix' => '</h2>',
       );
 
-      $knockoutmatches = tippgame_competition_dao()->findMatchsByGameday($gameday_id);
+      $knockoutmatches = betgame_competition_dao()->findMatchsByGameday($gameday_id);
       if($knockoutmatches) {
         $ra['knockout'][$gameday_id]['matches'] = array(
           '#matches' => $knockoutmatches,
@@ -68,7 +68,7 @@ function tippgame_competition_page_competition(Competition $competition) {
           ),
           '#showHeader' => FALSE,
           '#useShortnames' => FALSE,
-          '#theme' => 'tippgame_competition_matches',
+          '#theme' => 'betgame_competition_matches',
         );
       }
     }
@@ -88,26 +88,26 @@ function tippgame_competition_page_competition(Competition $competition) {
  *   - showHeader: Boolean
  *   - cols: array Shown columns, leave empty for default.
  */
-function theme_tippgame_competition_matches(&$variables) {
+function theme_betgame_competition_matches(&$variables) {
   $output = '';
 
   $matches = $variables['matches'];
   $showHeader = $variables['showHeader'];
   $useShortnames = $variables['useShortnames'];
-  $access= user_access('administer tippgame');
+  $access= user_access('administer betgame');
 
   if($matches && !empty($matches)) {
     foreach($matches as $match) {
 
-      $group = tippgame_competition_dao()->findGroup($match->getGroupid());
+      $group = betgame_competition_dao()->findGroup($match->getGroupid());
       $groupval = '';
       if($group) {
-        $groupval = l($useShortnames ? $group->getShortname() : $group->getName(), 'tippgame/competition/group/'.$group->getId());
+        $groupval = l($useShortnames ? $group->getShortname() : $group->getName(), 'betgame/competition/group/'.$group->getId());
       }
-      $gd = tippgame_competition_dao()->findGameday($match->getGameday());
+      $gd = betgame_competition_dao()->findGameday($match->getGameday());
       $gamedayval = '';
       if($gd) {
-        $gamedayval = l($gd->getName(), 'tippgame/competition/gameday/'.$gd->getId());
+        $gamedayval = l($gd->getName(), 'betgame/competition/gameday/'.$gd->getId());
       }
 
       $fields = array(
@@ -116,10 +116,10 @@ function theme_tippgame_competition_matches(&$variables) {
         array('data' => $match->getGamenumber()),
         array('data' => $gamedayval),
         array('data' => $groupval),
-        array('data' => theme('tippgame_competition_match_team', array('match' => $match, 'type' => 'home', 'useShortname' => $useShortnames))),
+        array('data' => theme('betgame_competition_match_team', array('match' => $match, 'type' => 'home', 'useShortname' => $useShortnames))),
         array('data' => '-'),
-        array('data' => theme('tippgame_competition_match_team', array('match' => $match, 'type' => 'guest', 'useShortname' => $useShortnames))),
-        array('data' => theme('tippgame_competition_match_result', array('match' => $match))),
+        array('data' => theme('betgame_competition_match_team', array('match' => $match, 'type' => 'guest', 'useShortname' => $useShortnames))),
+        array('data' => theme('betgame_competition_match_result', array('match' => $match))),
       );
 
       $tablerow = array(
@@ -172,7 +172,7 @@ function theme_tippgame_competition_matches(&$variables) {
  *   - showHeader: Boolean
  *   - cols: array Shown columns, leave empty for default.
  */
-function theme_tippgame_competition_scoretable(&$variables) {
+function theme_betgame_competition_scoretable(&$variables) {
   $output = '';
 
   $tablerows = $variables['tabledata'];
@@ -182,13 +182,13 @@ function theme_tippgame_competition_scoretable(&$variables) {
   if($tablerows && !empty($tablerows)) {
     foreach($tablerows as $table) {
 
-      $team = tippgame_competition_dao()->findTeam($table->team);
+      $team = betgame_competition_dao()->findTeam($table->team);
       $diff = $table->goalsown - $table->goalsagainst;
       $goals = $table->goalsown . ':' . $table->goalsagainst;
 
       $fields = array(
         array('data' => $table->position . '.'),
-        array('data' => theme('tippgame_competition_team', array('team' => $team, 'useShortname' => $useShortnames))),
+        array('data' => theme('betgame_competition_team', array('team' => $team, 'useShortname' => $useShortnames))),
         array('data' => $table->matchesplayed),
         array('data' => $goals),
         array('data' => $diff),
@@ -238,7 +238,7 @@ function theme_tippgame_competition_scoretable(&$variables) {
  *   - type: String home|guest
  *   - useShortname: Boolean if short name to use instead of full name.
  */
-function theme_tippgame_competition_match_team($variables) {
+function theme_betgame_competition_match_team($variables) {
   $output = '';
 
   $match = $variables['match'];
@@ -253,7 +253,7 @@ function theme_tippgame_competition_match_team($variables) {
       } else {
         $placeholder = unserialize($match->getPlaceholderhomeval());
       }
-      $output .= theme('tippgame_competition_team_placeholder', array('placeholder' => $placeholder, 'competition_id' => $match->getCompetition(), 'useShortname' => $useShortname));
+      $output .= theme('betgame_competition_team_placeholder', array('placeholder' => $placeholder, 'competition_id' => $match->getCompetition(), 'useShortname' => $useShortname));
 
     } else {
       $team_id = 0;
@@ -263,8 +263,8 @@ function theme_tippgame_competition_match_team($variables) {
         $team_id = $match->getHometeam();
       }
 
-      if($team = tippgame_competition_dao()->findTeam($team_id)) {
-        $output .= theme('tippgame_competition_team', array('team' => $team, 'useShortname' => $useShortname));
+      if($team = betgame_competition_dao()->findTeam($team_id)) {
+        $output .= theme('betgame_competition_team', array('team' => $team, 'useShortname' => $useShortname));
 
       }
     }
@@ -282,7 +282,7 @@ function theme_tippgame_competition_match_team($variables) {
  *   - team: Match
  *   - useShortname: Boolean if short name to use instead of full name.
  */
-function theme_tippgame_competition_team($variables) {
+function theme_betgame_competition_team($variables) {
   $output = '';
 
   $useShortname = $variables['useShortname'];
@@ -303,7 +303,7 @@ function theme_tippgame_competition_team($variables) {
  *   - placeholder: PlaceholderGroupResult|PlaceholderGameResult
  *   - useShortname: Boolean if short name to use instead of full name.
  */
-function theme_tippgame_competition_team_placeholder($variables) {
+function theme_betgame_competition_team_placeholder($variables) {
   global $language;
 
   $output = '';
@@ -315,7 +315,7 @@ function theme_tippgame_competition_team_placeholder($variables) {
   if($placeholder) {
 
     if ($placeholder instanceof PlaceholderGroupResult) {
-      $group = tippgame_competition_controller()->getGroupByIndex($competition_id, $placeholder->groupindex);
+      $group = betgame_competition_controller()->getGroupByIndex($competition_id, $placeholder->groupindex);
 
       $output .= t('@position @group', array('@position' => $placeholder->groupposition.'.', '@group' => ($useShortname ? $group->getShortname() : $group->getName())));
 
@@ -336,14 +336,14 @@ function theme_tippgame_competition_team_placeholder($variables) {
  *   - match: Match
  *   - showDetails: Boolean if detail of result will be rendered.
  */
-function theme_tippgame_competition_match_result($variables) {
+function theme_betgame_competition_match_result($variables) {
   $output = '';
 
   $match = $variables['match'];
   if($match) {
     $showDetails = $variables['showDetails'];
 
-    if($result = tippgame_competition_dao()->findMatchResult($match->getId())) {
+    if($result = betgame_competition_dao()->findMatchResult($match->getId())) {
       $output .= $result->getHome() . '-' . $result->getGuest();
       if($showDetails) {
         switch ($result->getType()) {

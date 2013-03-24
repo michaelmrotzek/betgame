@@ -1,9 +1,9 @@
 <?php
 
-require_once(drupal_get_path('module', 'tippgame_competition') . '/lib/CompetitionEntity.php');
-require_once(drupal_get_path('module', 'tippgame_competition') . '/lib/CompetitionDao.php');
-require_once(drupal_get_path('module', 'tippgame_matchplan') . '/lib/MatchPlanEntity.php');
-require_once(drupal_get_path('module', 'tippgame_matchplan') . '/lib/MatchPlanDao.php');
+require_once(drupal_get_path('module', 'betgame_competition') . '/lib/CompetitionEntity.php');
+require_once(drupal_get_path('module', 'betgame_competition') . '/lib/CompetitionDao.php');
+require_once(drupal_get_path('module', 'betgame_matchplan') . '/lib/MatchPlanEntity.php');
+require_once(drupal_get_path('module', 'betgame_matchplan') . '/lib/MatchPlanDao.php');
 
 class CompetitionController {
 
@@ -429,7 +429,7 @@ class CompetitionController {
 
       foreach($fixtures as $fixture) {
         // make updatable
-        $m = tippgame_competition_dao()->findMatchByGamenumber($competition_id, $fixture->getGamenumber());
+        $m = betgame_competition_dao()->findMatchByGamenumber($competition_id, $fixture->getGamenumber());
         if(!$m) {
           $m = new Match();
         }
@@ -469,7 +469,7 @@ class CompetitionController {
           if(!$gameday->getIsallornothing()) {
             // set gameday to all or nothing if not already done
             $gameday->setIsallornothing(1);
-            tippgame_competition_dao()->storeGameday($gameday);
+            betgame_competition_dao()->storeGameday($gameday);
           }
 
           $homeplaceholder = new PlaceholderGroupResult();
@@ -491,7 +491,7 @@ class CompetitionController {
           if(!$gameday->getIsallornothing()) {
             // set gameday to all or nothing if not already done
             $gameday->setIsallornothing(1);
-            tippgame_competition_dao()->storeGameday($gameday);
+            betgame_competition_dao()->storeGameday($gameday);
           }
 
           $homeplaceholder = new PlaceholderGameResult();
@@ -505,7 +505,7 @@ class CompetitionController {
 
         }
 
-        tippgame_competition_dao()->storeMatch($m);
+        betgame_competition_dao()->storeMatch($m);
          
       }
 
@@ -515,7 +515,7 @@ class CompetitionController {
           $match->setType(MATCH_TYPE_ALLORNOTHING_RETURNLEG);
           $match->setReturnmatchgamenumber($returnlegmatches[$gamenumber]);
           
-          tippgame_competition_dao()->storeMatch($match);
+          betgame_competition_dao()->storeMatch($match);
         }
       }
 
@@ -531,7 +531,7 @@ class CompetitionController {
    * @return Group
    */
   public function getGroupByIndex($competition_id, $index) {
-    $groups = tippgame_competition_dao()->findGroups($competition_id);
+    $groups = betgame_competition_dao()->findGroups($competition_id);
     $indexedGroups = array_values($groups);
 
     --$index; //correct human index to technical
@@ -546,7 +546,7 @@ class CompetitionController {
    * @return Team
    */
   public function getTeamByIndex($competition_id, $group_id, $index) {
-    $teams = tippgame_competition_dao()->findTeamsByGroup($group_id);
+    $teams = betgame_competition_dao()->findTeamsByGroup($group_id);
     $indexedTeams = array_values($teams);
 
     --$index; //correct human index to technical
@@ -561,7 +561,7 @@ class CompetitionController {
    * @return Gameday
    */
   public function getGamedayByIndex($competition_id, $index) {
-    $gamedays = tippgame_competition_dao()->findGamedays($competition_id);
+    $gamedays = betgame_competition_dao()->findGamedays($competition_id);
     $indexedGamedays = array_values($gamedays);
 
     --$index; //correct human index to technical

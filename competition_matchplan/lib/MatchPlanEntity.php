@@ -1,6 +1,6 @@
 <?php 
 
-require_once(drupal_get_path('module', 'tippgame') . '/lib/Entity.php');
+require_once(drupal_get_path('module', 'betgame') . '/lib/Entity.php');
 
 /**
  * Match plan to define abstract schedules of different competition types. So

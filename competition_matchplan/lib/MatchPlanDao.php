@@ -1,17 +1,17 @@
 <?php 
 
-require_once(drupal_get_path('module', 'tippgame') . '/lib/EntityDao.php');
-require_once(drupal_get_path('module', 'tippgame_matchplan') . '/lib/MatchPlanEntity.php');
+require_once(drupal_get_path('module', 'betgame') . '/lib/EntityDao.php');
+require_once(drupal_get_path('module', 'betgame_matchplan') . '/lib/MatchPlanEntity.php');
 
 class MatchPlanDao extends AbstractEntityDao {
 
   function entityTableMap() {
     return array(
-      'MatchPlan' => 'tippgame_matchplan',
-      'Fixture' => 'tippgame_matchplan_fixture',
-      'FixtureGroupMatch' => 'tippgame_matchplan_fixture',
-      'FixtureGroupPhaseResult' => 'tippgame_matchplan_fixture',
-      'FixtureAllOrNothingMatch' => 'tippgame_matchplan_fixture',
+      'MatchPlan' => 'betgame_matchplan',
+      'Fixture' => 'betgame_matchplan_fixture',
+      'FixtureGroupMatch' => 'betgame_matchplan_fixture',
+      'FixtureGroupPhaseResult' => 'betgame_matchplan_fixture',
+      'FixtureAllOrNothingMatch' => 'betgame_matchplan_fixture',
     );
   }
 

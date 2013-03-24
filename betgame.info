@@ -1,0 +1,4 @@
+name = "Betgame"
+description = ""
+package = "betgame"
+core = "7.x"

@@ -1,6 +1,6 @@
 <?php
 
-require_once(drupal_get_path('module', 'tippgame') . '/lib/Entity.php');
+require_once(drupal_get_path('module', 'betgame') . '/lib/Entity.php');
 
 class Competition extends AbstractEntity {
   public $name;

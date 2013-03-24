@@ -12,9 +12,9 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('tippgame', 'tippgame_matchplan', 'tippgame_competition');
+    parent::setUp('betgame', 'betgame_matchplan', 'betgame_competition');
 
-    //$this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer tippgame', 'access tippgame'));
+    //$this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer betgame', 'access betgame'));
     //$this->drupalLogin($this->privileged_user);
   }
 
@@ -26,27 +26,27 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $c->setName("Test Competition");
     $c->setMatchplan($matchplan_id);
 
-    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $competition_id = betgame_competition_dao()->storeCompetition($c);
     $this->assertNotNull($competition_id);
 
     // generate default data and matches
-    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
-    tippgame_competition_controller()->generateMatches($competition_id);
+    betgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    betgame_competition_controller()->generateMatches($competition_id);
 
     // data for checks
-    $group = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $group = betgame_competition_controller()->getGroupByIndex($competition_id, 1);
     $group_id = $group->getId();
 
-    $team1 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
+    $team1 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
     $team1_id = $team1->getId();
 
-    $team2 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
+    $team2 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
     $team2_id = $team2->getId();
 
-    $team3 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 3);
+    $team3 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 3);
     $team3_id = $team3->getId();
 
-    $team4 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 4);
+    $team4 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 4);
     $team4_id = $team4->getId();
 
     /*
@@ -54,11 +54,11 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     */
 
     // test calculation after first result
-    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
-    tippgame_competition_controller()->setResult($match1, 1, 0);
+    $match1 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    betgame_competition_controller()->setResult($match1, 1, 0);
 
     $tabledata = NULL;
-    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $tabledata = betgame_competition_controller()->calculateTable($group_id);
     $this->assertEqual(4, count($tabledata));
 
     $t1 = array_shift($tabledata);
@@ -98,11 +98,11 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $this->assertEqual(0, $t4->points);
 
     // test calculation after second result
-    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
-    tippgame_competition_controller()->setResult($match2, 2, 2);
+    $match2 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    betgame_competition_controller()->setResult($match2, 2, 2);
 
     $tabledata = NULL;
-    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $tabledata = betgame_competition_controller()->calculateTable($group_id);
     $this->assertEqual(4, count($tabledata));
 
     $t1 = array_shift($tabledata);
@@ -142,13 +142,13 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $this->assertEqual(0, $t4->points);
 
     // points equal, goal diff
-    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
-    $this->assertTrue(tippgame_competition_controller()->setResult($match1, 1, 0));
-    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
-    $this->assertTrue(tippgame_competition_controller()->setResult($match2, 3, 1));
+    $match1 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    $this->assertTrue(betgame_competition_controller()->setResult($match1, 1, 0));
+    $match2 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    $this->assertTrue(betgame_competition_controller()->setResult($match2, 3, 1));
 
     $tabledata = NULL;
-    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $tabledata = betgame_competition_controller()->calculateTable($group_id);
     $this->assertEqual(4, count($tabledata));
     $this->verbose('points equal, goal diff: ' . var_export($tabledata, TRUE));
 
@@ -162,13 +162,13 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $this->assertEqual($team4->getId(), $t4->team);
 
     // points equal, same goal diff, more own goals
-    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
-    tippgame_competition_controller()->setResult($match1, 1, 0);
-    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
-    tippgame_competition_controller()->setResult($match2, 3, 2);
+    $match1 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    betgame_competition_controller()->setResult($match1, 1, 0);
+    $match2 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    betgame_competition_controller()->setResult($match2, 3, 2);
 
     $tabledata = NULL;
-    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $tabledata = betgame_competition_controller()->calculateTable($group_id);
     $this->assertEqual(4, count($tabledata));
     $this->verbose('points equal, same goal diff, more own goals: ' . var_export($tabledata, TRUE));
 
@@ -182,15 +182,15 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $this->assertEqual($team2->getId(), $t4->team);
 
     // test calculation after adding a result to second gameday
-    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
-    tippgame_competition_controller()->setResult($match1, 1, 0);
-    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
-    tippgame_competition_controller()->setResult($match2, 2, 2);
+    $match1 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    betgame_competition_controller()->setResult($match1, 1, 0);
+    $match2 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    betgame_competition_controller()->setResult($match2, 2, 2);
 
-    $match3 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 3);
-    tippgame_competition_controller()->setResult($match3, 2, 1);
+    $match3 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 3);
+    betgame_competition_controller()->setResult($match3, 2, 1);
 
-    $tabledata = tippgame_competition_controller()->calculateTable($group_id);
+    $tabledata = betgame_competition_controller()->calculateTable($group_id);
 
     $this->assertEqual(4, count($tabledata));
 
@@ -239,32 +239,32 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $c->setName("Test Competition");
     $c->setMatchplan($matchplan_id);
 
-    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $competition_id = betgame_competition_dao()->storeCompetition($c);
     $this->assertNotNull($competition_id);
 
     // generate default data and matches
-    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
-    tippgame_competition_controller()->generateMatches($competition_id);
+    betgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    betgame_competition_controller()->generateMatches($competition_id);
 
     // data for checks
-    $group = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $group = betgame_competition_controller()->getGroupByIndex($competition_id, 1);
     $group_id = $group->getId();
 
-    $team1 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
+    $team1 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
     $team1_id = $team1->getId();
 
-    $team2 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
+    $team2 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
     $team2_id = $team2->getId();
 
-    $team3 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 3);
+    $team3 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 3);
     $team3_id = $team3->getId();
 
-    $team4 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 4);
+    $team4 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 4);
     $team4_id = $team4->getId();
 
     // test get group match by teams
 
-    $match = tippgame_competition_dao()->findMatchByTeamsGroup($group_id, $team1_id, $team3_id);
+    $match = betgame_competition_dao()->findMatchByTeamsGroup($group_id, $team1_id, $team3_id);
     $this->assertNotNull($match);
     if($match) {
       $this->assertEqual(3, $match->getGamenumber());
@@ -272,7 +272,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
 
     $match = NULL;
     // order is not important, so we expect the same result
-    $match = tippgame_competition_dao()->findMatchByTeamsGroup($group_id, $team3_id, $team1_id);
+    $match = betgame_competition_dao()->findMatchByTeamsGroup($group_id, $team3_id, $team1_id);
     $this->assertNotNull($match);
     if($match) {
       $this->assertEqual(3, $match->getGamenumber());
@@ -286,7 +286,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $matchplan->setGroups(1);
     $matchplan->setGamedays(1);
 
-    $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+    $matchplan_id = betgame_matchplan_dao()->storeMatchPlan($matchplan);
 
     $gd = 1;
     $f = new FixtureGroupMatch();
@@ -299,7 +299,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setHomegroupsetposition(1);
     $f->setGuestgroupsetposition(2);
     $f->setReturnmatchgamenumber(2);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f = new FixtureGroupMatch();
     $f->setMatchplan($matchplan_id);
@@ -310,75 +310,75 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(2);
     $f->setGuestgroupsetposition(1);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $c = new Competition();
     $c->setName("Test KO-Competition");
     $c->setMatchplan($matchplan_id);
 
-    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $competition_id = betgame_competition_dao()->storeCompetition($c);
     $this->assertNotNull($competition_id);
 
     // generate default data and matches
-    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
-    tippgame_competition_controller()->generateMatches($competition_id);
+    betgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    betgame_competition_controller()->generateMatches($competition_id);
 
     // data for checks
-    $group = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $group = betgame_competition_controller()->getGroupByIndex($competition_id, 1);
     $group_id = $group->getId();
 
-    $team1 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
+    $team1 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 1);
     $team1_id = $team1->getId();
 
-    $team2 = tippgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
+    $team2 = betgame_competition_controller()->getTeamByIndex($competition_id, $group_id, 2);
     $team2_id = $team2->getId();
 
     // tests
-    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    $match1 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
     $this->assertNotNull($match1);
     $this->assertEqual(1, $match1->getGamenumber());
     $this->assertEqual(2, $match1->getReturnmatchgamenumber());
 
-    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    $match2 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
     $this->verbose('match2: ' . var_export($match2, TRUE));
     $this->assertNotNull($match2);
     $this->assertEqual(2, $match2->getGamenumber());
     $this->assertEqual(1, $match2->getReturnmatchgamenumber());
 
     // points equal, same goal diff, more own goals
-    $match1 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
-    $match2 = tippgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
+    $match1 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 1);
+    $match2 = betgame_competition_dao()->findMatchByGamenumber($competition_id, 2);
 
     // no result yet
-    $this->assertNull(tippgame_competition_controller()->getWinner($match1));
+    $this->assertNull(betgame_competition_controller()->getWinner($match1));
 
     // only one result
-    tippgame_competition_controller()->setResult($match1, 1, 0);
-    $this->assertNull(tippgame_competition_controller()->getWinner($match1));
-    $this->assertNull(tippgame_competition_controller()->getWinner($match2));
+    betgame_competition_controller()->setResult($match1, 1, 0);
+    $this->assertNull(betgame_competition_controller()->getWinner($match1));
+    $this->assertNull(betgame_competition_controller()->getWinner($match2));
 
     // draw, but team1 has scored more goals as guest
-    tippgame_competition_controller()->setResult($match2, 3, 2);
-    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match1));
-    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match2));
+    betgame_competition_controller()->setResult($match2, 3, 2);
+    $this->assertEqual($team1_id, betgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team1_id, betgame_competition_controller()->getWinner($match2));
 
     // team1 wins both
-    tippgame_competition_controller()->setResult($match1, 2, 1);
-    tippgame_competition_controller()->setResult($match2, 1, 2);
-    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match1));
-    $this->assertEqual($team1_id, tippgame_competition_controller()->getWinner($match2));
+    betgame_competition_controller()->setResult($match1, 2, 1);
+    betgame_competition_controller()->setResult($match2, 1, 2);
+    $this->assertEqual($team1_id, betgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team1_id, betgame_competition_controller()->getWinner($match2));
 
     // team1 wins
-    tippgame_competition_controller()->setResult($match1, 1, 1);
-    tippgame_competition_controller()->setResult($match2, 1, 0);
-    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match1));
-    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match2));
+    betgame_competition_controller()->setResult($match1, 1, 1);
+    betgame_competition_controller()->setResult($match2, 1, 0);
+    $this->assertEqual($team2_id, betgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team2_id, betgame_competition_controller()->getWinner($match2));
 
     // draw, but team2 has scored more goals as guest
-    tippgame_competition_controller()->setResult($match1, 1, 1);
-    tippgame_competition_controller()->setResult($match2, 0, 0);
-    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match1));
-    $this->assertEqual($team2_id, tippgame_competition_controller()->getWinner($match2));
+    betgame_competition_controller()->setResult($match1, 1, 1);
+    betgame_competition_controller()->setResult($match2, 0, 0);
+    $this->assertEqual($team2_id, betgame_competition_controller()->getWinner($match1));
+    $this->assertEqual($team2_id, betgame_competition_controller()->getWinner($match2));
   }
 
   /**
@@ -393,7 +393,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $matchplan->setGroups(1);
     $matchplan->setGamedays(3);
 
-    $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+    $matchplan_id = betgame_matchplan_dao()->storeMatchPlan($matchplan);
 
     $gd = 1;
     $f = new FixtureGroupMatch();
@@ -405,7 +405,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(1);
     $f->setGuestgroupsetposition(2);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f = new FixtureGroupMatch();
     $f->setMatchplan($matchplan_id);
@@ -416,7 +416,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(3);
     $f->setGuestgroupsetposition(4);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $gd++;
     $f = new FixtureGroupMatch();
@@ -428,7 +428,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(1);
     $f->setGuestgroupsetposition(3);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f = new FixtureGroupMatch();
     $f->setMatchplan($matchplan_id);
@@ -439,7 +439,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(2);
     $f->setGuestgroupsetposition(4);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $gd++;
     $f = new FixtureGroupMatch();
@@ -451,7 +451,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(4);
     $f->setGuestgroupsetposition(1);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f = new FixtureGroupMatch();
     $f->setMatchplan($matchplan_id);
@@ -462,7 +462,7 @@ class TippgameCompetitionTableTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setHomegroupsetposition(3);
     $f->setGuestgroupsetposition(2);
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     return $matchplan_id;
   }

@@ -3,8 +3,8 @@
 /**
  * Implements hook_schema().
  */
-function tippgame_matchplan_schema() {
-  $schema['tippgame_matchplan'] = array(
+function betgame_matchplan_schema() {
+  $schema['betgame_matchplan'] = array(
     'description' => '',
     'fields' => array(
       'id' => array(
@@ -39,7 +39,7 @@ function tippgame_matchplan_schema() {
     'primary key' => array('id'),
   );
 
-  $schema['tippgame_matchplan_fixture'] = array(
+  $schema['betgame_matchplan_fixture'] = array(
     'description' => '',
     'fields' => array(
       'id' => array(
@@ -128,8 +128,8 @@ function tippgame_matchplan_schema() {
 /**
  * Implements hook_install().
  */
-function tippgame_matchplan_install() {
-  tippgame_matchplan_update_7001();
+function betgame_matchplan_install() {
+  betgame_matchplan_update_7001();
 }
 
 /**
@@ -137,9 +137,9 @@ function tippgame_matchplan_install() {
  * 
  * Install test tournament
  */
-function tippgame_matchplan_update_7001() {
+function betgame_matchplan_update_7001() {
   
-  module_load_include('php', 'tippgame_matchplan', 'lib/MatchPlanEntity');
+  module_load_include('php', 'betgame_matchplan', 'lib/MatchPlanEntity');
   
   $m = new MatchPlan();
   $m->setName('Tournament (8 teams, 2 groups)');
@@ -147,7 +147,7 @@ function tippgame_matchplan_update_7001() {
   $m->setTeams(8);
   $m->setGamedays(5);
   
-  $m_id = tippgame_matchplan_dao()->storeMatchPlan($m);
+  $m_id = betgame_matchplan_dao()->storeMatchPlan($m);
   
   $number = 0;
   $gd = 1;
@@ -163,7 +163,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(1);
   $f->setGuestgroupsetposition(2);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -176,7 +176,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(3);
   $f->setGuestgroupsetposition(4);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -189,7 +189,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(1);
   $f->setGuestgroupsetposition(2);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -202,7 +202,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(3);
   $f->setGuestgroupsetposition(4);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   // 2
   $gd = 2;
@@ -218,7 +218,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(1);
   $f->setGuestgroupsetposition(3);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -231,7 +231,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(2);
   $f->setGuestgroupsetposition(4);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -244,7 +244,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(1);
   $f->setGuestgroupsetposition(3);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -257,7 +257,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(2);
   $f->setGuestgroupsetposition(4);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   // 3
   $gd = 3;
@@ -273,7 +273,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(4);
   $f->setGuestgroupsetposition(1);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -286,7 +286,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(3);
   $f->setGuestgroupsetposition(2);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -299,7 +299,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(4);
   $f->setGuestgroupsetposition(1);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $f = new FixtureGroupMatch();
@@ -312,7 +312,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegroupsetposition(3);
   $f->setGuestgroupsetposition(2);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   // semi final
   $gd = 4;
@@ -329,7 +329,7 @@ function tippgame_matchplan_update_7001() {
   $f->setGuestgroup(2);
   $f->setGuestgroupresultposition(2);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   $number++;
   $sf2 = $number;
@@ -343,7 +343,7 @@ function tippgame_matchplan_update_7001() {
   $f->setGuestgroup(1);
   $f->setGuestgroupresultposition(2);
   
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
   // final
   $gd = 5;
@@ -357,7 +357,7 @@ function tippgame_matchplan_update_7001() {
   $f->setHomegamenumber($sf1);
   $f->setGuestgamenumber($sf2);
 
-  tippgame_matchplan_dao()->storeFixture($f);
+  betgame_matchplan_dao()->storeFixture($f);
   
 }
 

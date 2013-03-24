@@ -12,19 +12,19 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('tippgame', 'tippgame_matchplan', 'tippgame_competition');
+    parent::setUp('betgame', 'betgame_matchplan', 'betgame_competition');
 
-    //$this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer tippgame', 'access tippgame'));
+    //$this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer betgame', 'access betgame'));
     //$this->drupalLogin($this->privileged_user);
   }
 
   public function testDaoInstantiation() {
-    $Dao = tippgame_competition_dao();
+    $Dao = betgame_competition_dao();
     $this->assertNotNull($Dao);
   }
 
   public function testControllerInstantiation() {
-    $controller = tippgame_competition_controller();
+    $controller = betgame_competition_controller();
     $this->assertNotNull($controller);
   }
 
@@ -33,11 +33,11 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $c->setName("Test Competition");
     $c->setMatchplan(100);
 
-    $c_id = tippgame_competition_dao()->storeCompetition($c);
+    $c_id = betgame_competition_dao()->storeCompetition($c);
 
     $this->assertNotNull($c_id);
 
-    $lc = tippgame_competition_dao()->findCompetition($c_id);
+    $lc = betgame_competition_dao()->findCompetition($c_id);
 
     $this->assertNotNull($lc);
     $this->assertEqual($c_id, $lc->getId());
@@ -53,13 +53,13 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $g->setCompetition(100);
     $g->setWeight(1);
 
-    $g_id = tippgame_competition_dao()->storeGroup($g);
+    $g_id = betgame_competition_dao()->storeGroup($g);
 
     $this->assertNotNull($g_id);
 
-    $this->assertEqual(1, count(tippgame_competition_dao()->findGroups(100)));
+    $this->assertEqual(1, count(betgame_competition_dao()->findGroups(100)));
 
-    $lg = tippgame_competition_dao()->findGroup($g_id);
+    $lg = betgame_competition_dao()->findGroup($g_id);
 
     $this->assertNotNull($lg);
     $this->assertEqual($g_id, $lg->getId());
@@ -77,7 +77,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $g->setCompetition(100);
     $g->setWeight(1);
 
-    $g_id = tippgame_competition_dao()->storeGroup($g);
+    $g_id = betgame_competition_dao()->storeGroup($g);
     $this->assertNotNull($g_id);
 
     $t = new Team();
@@ -86,11 +86,11 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $t->setInitialsetposition(9);
     $t->setCompetition(10);
 
-    $team_id = tippgame_competition_dao()->storeTeam($t);
+    $team_id = betgame_competition_dao()->storeTeam($t);
 
-    $this->assertEqual(1, count(tippgame_competition_dao()->findTeams(10)));
+    $this->assertEqual(1, count(betgame_competition_dao()->findTeams(10)));
 
-    $lt = tippgame_competition_dao()->findTeam($team_id);
+    $lt = betgame_competition_dao()->findTeam($team_id);
 
     $this->assertNotNull($lt);
     $this->assertEqual($team_id, $lt->getId());
@@ -108,13 +108,13 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $g->setCompetition(100);
     $g->setIsallornothing(1);
 
-    $g_id = tippgame_competition_dao()->storeGameday($g);
+    $g_id = betgame_competition_dao()->storeGameday($g);
 
     $this->assertNotNull($g_id);
 
-    $this->assertEqual(1, count(tippgame_competition_dao()->findGamedays(100)));
+    $this->assertEqual(1, count(betgame_competition_dao()->findGamedays(100)));
 
-    $lg = tippgame_competition_dao()->findGameday($g_id);
+    $lg = betgame_competition_dao()->findGameday($g_id);
 
     $this->assertNotNull($lg);
     $this->assertEqual($g_id, $lg->getId());
@@ -133,29 +133,29 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $matchplan->setGroups(2);
     $matchplan->setGamedays(5);
 
-    $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+    $matchplan_id = betgame_matchplan_dao()->storeMatchPlan($matchplan);
     $this->assertNotNull($matchplan_id);
 
     $c = new Competition();
     $c->setName("Test Competition");
     $c->setMatchplan($matchplan_id);
 
-    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $competition_id = betgame_competition_dao()->storeCompetition($c);
 
     $this->assertNotNull($competition_id);
 
-    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    betgame_competition_controller()->autoCreateGroupsTeams($competition_id);
 
     // check amount of groups and teams
-    $groups = tippgame_competition_dao()->findGroups($competition_id);
+    $groups = betgame_competition_dao()->findGroups($competition_id);
     $this->assertNotNull($groups);
     $this->assertEqual(2, count($groups));
 
-    $teams = tippgame_competition_dao()->findTeams($competition_id);
+    $teams = betgame_competition_dao()->findTeams($competition_id);
     $this->assertNotNull($teams);
     $this->assertEqual(8, count($teams));
 
-    $gamedays = tippgame_competition_dao()->findGamedays($competition_id);
+    $gamedays = betgame_competition_dao()->findGamedays($competition_id);
     $this->assertNotNull($gamedays);
     $this->assertEqual(5, count($gamedays));
 
@@ -198,31 +198,31 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
 
     // check helper methods
 
-    $g1 = tippgame_competition_controller()->getGroupByIndex($competition_id, 1);
+    $g1 = betgame_competition_controller()->getGroupByIndex($competition_id, 1);
     $this->assertNotNull($g1);
     $this->assertEqual('Group 1', $g1->getName());
     
-    $g2 = tippgame_competition_controller()->getGroupByIndex($competition_id, 2);
+    $g2 = betgame_competition_controller()->getGroupByIndex($competition_id, 2);
     $this->assertNotNull($g2);
     $this->assertEqual('Group 2', $g2->getName());
 
-    $gd3 = tippgame_competition_controller()->getGamedayByIndex($competition_id, 3);
+    $gd3 = betgame_competition_controller()->getGamedayByIndex($competition_id, 3);
     $this->assertNotNull($gd3);
     $this->assertEqual('Gameday 3', $gd3->getName());
 
-    $t3 = tippgame_competition_controller()->getTeamByIndex($competition_id, $g1->getId(), 3);
+    $t3 = betgame_competition_controller()->getTeamByIndex($competition_id, $g1->getId(), 3);
     $this->assertNotNull($t3);
     $this->assertEqual('Team 3', $t3->getName());
     
-    $t6 = tippgame_competition_controller()->getTeamByIndex($competition_id, $g2->getId(), 2);
+    $t6 = betgame_competition_controller()->getTeamByIndex($competition_id, $g2->getId(), 2);
     $this->assertNotNull($t6);
     $this->assertEqual('Team 6', $t6->getName());
 
     // generate matches
     $this->addMatchplanFixtures($matchplan_id);
-    tippgame_competition_controller()->generateMatches($competition_id);
+    betgame_competition_controller()->generateMatches($competition_id);
 
-    $matches = tippgame_competition_dao()->findMatchs($competition_id);
+    $matches = betgame_competition_dao()->findMatchs($competition_id);
     $match1 = array_shift($matches);
 
     $this->assertNull($match1->getType());
@@ -230,26 +230,26 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $this->assertEqual($competition_id, $match1->getCompetition());
     $this->assertEqual(0, $match1->getKickoff());
 
-    $g = tippgame_competition_dao()->findGroup($match1->getGroupid());
+    $g = betgame_competition_dao()->findGroup($match1->getGroupid());
     $this->assertNotNull($g);
     if($g) {
       $this->assertEqual('Group 1', $g->getName());
     }
 
-    $gd = tippgame_competition_dao()->findGameday($match1->getGameday());
+    $gd = betgame_competition_dao()->findGameday($match1->getGameday());
     $this->assertNotNull($gd);
     if($gd) {
       $this->assertEqual('Gameday 1', $gd->getName());
     }
 
-    $th = tippgame_competition_dao()->findTeam($match1->getHometeam());
+    $th = betgame_competition_dao()->findTeam($match1->getHometeam());
     $this->assertNotNull($th);
     if($th) {
       $this->assertEqual('Team 1', $th->getName());
       $this->assertEqual(1, $th->getInitialsetposition());
     }
 
-    $tg = tippgame_competition_dao()->findTeam($match1->getGuestteam());
+    $tg = betgame_competition_dao()->findTeam($match1->getGuestteam());
     $this->assertNotNull($tg);
     if($tg) {
       $this->assertEqual('Team 2', $tg->getName());
@@ -265,7 +265,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $this->assertEqual(2, $match2->getGamenumber());
     $this->assertEqual($competition_id, $match2->getCompetition());
     $this->assertEqual(0, $match2->getGroupid());
-    $gd = tippgame_competition_dao()->findGameday($match2->getGameday());
+    $gd = betgame_competition_dao()->findGameday($match2->getGameday());
     $this->assertNotNull($gd);
     if($gd) {
       $this->assertEqual('Gameday 4', $gd->getName());
@@ -286,7 +286,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $this->assertEqual(4, $match4->getGamenumber());
     $this->assertEqual($competition_id, $match4->getCompetition());
     $this->assertEqual(0, $match4->getGroupid());
-    $gd = tippgame_competition_dao()->findGameday($match4->getGameday());
+    $gd = betgame_competition_dao()->findGameday($match4->getGameday());
     $this->assertNotNull($gd);
     if($gd) {
       $this->assertEqual('Gameday 5', $gd->getName());
@@ -313,7 +313,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $f->setHomegroupsetposition(1);
     $f->setGuestgroupsetposition(2);
 
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f =new FixtureGroupPhaseResult();
     $f->setMatchplan($m_id);
@@ -325,7 +325,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setGuestgroupresultposition(2);
 
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f =new FixtureGroupPhaseResult();
     $f->setMatchplan($m_id);
@@ -337,7 +337,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $f->setGuestgroup(1);
     $f->setGuestgroupresultposition(2);
 
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
     $f =new FixtureAllOrNothingMatch();
     $f->setMatchplan($m_id);
@@ -347,7 +347,7 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $f->setHomegamenumber(2);
     $f->setGuestgamenumber(3);
 
-    tippgame_matchplan_dao()->storeFixture($f);
+    betgame_matchplan_dao()->storeFixture($f);
 
   }
 
@@ -359,33 +359,33 @@ class TippgameCompetitionTestCase extends DrupalWebTestCase {
     $matchplan->setGroups(1);
     $matchplan->setGamedays(5);
   
-    $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+    $matchplan_id = betgame_matchplan_dao()->storeMatchPlan($matchplan);
     $this->assertNotNull($matchplan_id);
   
     $c = new Competition();
     $c->setName("Test Competition");
     $c->setMatchplan($matchplan_id);
   
-    $competition_id = tippgame_competition_dao()->storeCompetition($c);
+    $competition_id = betgame_competition_dao()->storeCompetition($c);
   
     $this->assertNotNull($competition_id);
   
-    tippgame_competition_controller()->autoCreateGroupsTeams($competition_id);
+    betgame_competition_controller()->autoCreateGroupsTeams($competition_id);
     
     // generate matches
     $this->addMatchplanFixtures($matchplan_id);
-    tippgame_competition_controller()->generateMatches($competition_id);
+    betgame_competition_controller()->generateMatches($competition_id);
     
-    tippgame_competition_dao()->deleteCompetition($competition_id);
+    betgame_competition_dao()->deleteCompetition($competition_id);
     
     // check that competition and depending data has been deleted
-    $lc = tippgame_competition_dao()->findCompetition($competition_id);
+    $lc = betgame_competition_dao()->findCompetition($competition_id);
     $this->assertNull($lc);
     
-    $this->assertEqual(0, count(tippgame_competition_dao()->findGroups($competition_id)));
-    $this->assertEqual(0, count(tippgame_competition_dao()->findTeams($competition_id)));
-    $this->assertEqual(0, count(tippgame_competition_dao()->findGamedays($competition_id)));
-    $this->assertEqual(0, count(tippgame_competition_dao()->findMatchs($competition_id)));
+    $this->assertEqual(0, count(betgame_competition_dao()->findGroups($competition_id)));
+    $this->assertEqual(0, count(betgame_competition_dao()->findTeams($competition_id)));
+    $this->assertEqual(0, count(betgame_competition_dao()->findGamedays($competition_id)));
+    $this->assertEqual(0, count(betgame_competition_dao()->findMatchs($competition_id)));
     
   }
   

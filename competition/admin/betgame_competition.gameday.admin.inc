@@ -1,7 +1,7 @@
 <?php 
 
 
-function _tippgame_competition_gameday_form(Competition $competition, Gameday $gameday, $viewmode = 'row') {
+function _betgame_competition_gameday_form(Competition $competition, Gameday $gameday, $viewmode = 'row') {
   $form = array();
 
   $detailed = (bool)($viewmode=='detail');
@@ -51,7 +51,7 @@ function _tippgame_competition_gameday_form(Competition $competition, Gameday $g
 /**
  * Implements hook_form().
  */
-function tippgame_competition_gamedays_form($form, &$form_state, Competition $competition) {
+function betgame_competition_gamedays_form($form, &$form_state, Competition $competition) {
   $form = array();
 
   if(!$competition) {
@@ -61,7 +61,7 @@ function tippgame_competition_gamedays_form($form, &$form_state, Competition $co
 
   $form['data'] = array(
     '#tree' => TRUE,
-    '#theme' => 'tippgame_competition_admin_form_table',
+    '#theme' => 'betgame_competition_admin_form_table',
     '#c_render_options' => array(
       'entityname' => 'gameday',
       'colsheader' => array(
@@ -78,19 +78,19 @@ function tippgame_competition_gamedays_form($form, &$form_state, Competition $co
     ),
   );
 
-  $gamedays = tippgame_competition_dao()->findGamedays($competition->getId());
+  $gamedays = betgame_competition_dao()->findGamedays($competition->getId());
   foreach($gamedays as $gameday) {
     $delta = $gameday->getId();
 
-    $form['data'][$delta] = _tippgame_competition_gameday_form($competition, $gameday);
+    $form['data'][$delta] = _betgame_competition_gameday_form($competition, $gameday);
 
     $form['data'][$delta]['actions']['edit'] = array(
-      '#markup' => l(t('Edit'), 'admin/config/tippgame/competition/'.$competition->getId().'/gameday/'.$gameday->getId().'/edit'),
+      '#markup' => l(t('Edit'), 'admin/config/betgame/competition/'.$competition->getId().'/gameday/'.$gameday->getId().'/edit'),
       '#prefix' => '<div class="action">',
       '#suffix' => '</div>',
     );
     $form['data'][$delta]['actions']['delete'] = array(
-      '#markup' => l(t('Delete'), 'admin/config/tippgame/competition/'.$competition->getId().'/gameday/'.$gameday->getId().'/delete'),
+      '#markup' => l(t('Delete'), 'admin/config/betgame/competition/'.$competition->getId().'/gameday/'.$gameday->getId().'/delete'),
       '#prefix' => '<div class="action">',
       '#suffix' => '</div>',
     );
@@ -105,19 +105,19 @@ function tippgame_competition_gamedays_form($form, &$form_state, Competition $co
   return $form;
 }
 
-function tippgame_competition_gamedays_form_submit($form, &$form_state) {
+function betgame_competition_gamedays_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/';
+  $form_state['redirect'] = 'admin/config/betgame/competition/';
 
   if(isset($values['data'])) {
     foreach($values['data'] as $data) {
       $competition_id = $data['competition'];
       $gameday = EntityHelper::array2object($data, 'Gameday');
-      tippgame_competition_dao()->storeGameday($gameday);
+      betgame_competition_dao()->storeGameday($gameday);
     }
     drupal_set_message(t('Gamedays updated'));
 
-    $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/gameday';
+    $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/gameday';
 
   } else {
     drupal_set_message(t('Error while updating'), 'error');
@@ -128,7 +128,7 @@ function tippgame_competition_gamedays_form_submit($form, &$form_state) {
 /**
  * Implements hook_form().
  */
-function tippgame_competition_gameday_edit_form($form, &$form_state, Competition $competition, Gameday $gameday = NULL) {
+function betgame_competition_gameday_edit_form($form, &$form_state, Competition $competition, Gameday $gameday = NULL) {
   $form = array();
 
   if(!$competition) {
@@ -136,13 +136,13 @@ function tippgame_competition_gameday_edit_form($form, &$form_state, Competition
     return $form;
   }
 
-  $title = t('Create new Gameday', array(), array('context' => 'tippgame'));
+  $title = t('Create new Gameday', array(), array('context' => 'betgame'));
   if($gameday) {
-    $title = t('Edit Gameday', array(), array('context' => 'tippgame'));
+    $title = t('Edit Gameday', array(), array('context' => 'betgame'));
   }
   drupal_set_title($title);
 
-  $form = _tippgame_competition_gameday_form($competition, $gameday, 'detail');
+  $form = _betgame_competition_gameday_form($competition, $gameday, 'detail');
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -150,18 +150,18 @@ function tippgame_competition_gameday_edit_form($form, &$form_state, Competition
     '#value' => t('Save'),
   );
   $form['actions']['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'admin/config/tippgame/competition/'.$competition->getId().'/gameday'),
+    '#markup' => l(t('Cancel'), 'admin/config/betgame/competition/'.$competition->getId().'/gameday'),
   );
 
   return $form;
 }
 
-function tippgame_competition_gameday_edit_form_submit($form, &$form_state) {
+function betgame_competition_gameday_edit_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$values['competition'].'/gameday';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$values['competition'].'/gameday';
 
   $gameday = EntityHelper::array2object($values, 'Gameday');
-  tippgame_competition_dao()->storeGameday($gameday);
+  betgame_competition_dao()->storeGameday($gameday);
 
   drupal_set_message(t('Gameday saved'));
 }
@@ -171,7 +171,7 @@ function tippgame_competition_gameday_edit_form_submit($form, &$form_state) {
  *
  * Admin delete gameday.
  */
-function tippgame_competition_gameday_delete_form($form, &$form_state, $competition, $gameday) {
+function betgame_competition_gameday_delete_form($form, &$form_state, $competition, $gameday) {
   if(is_object($competition) && is_object($gameday)) {
     $form['#competition_id'] = $competition->getId();
     $form['#gameday_id'] = $gameday->getId();
@@ -179,7 +179,7 @@ function tippgame_competition_gameday_delete_form($form, &$form_state, $competit
     return confirm_form(
         $form,
         t('Are you sure you want to delete gameday %title?', array('%title' => $gameday->getName())),
-        'admin/config/tippgame/competition/'.$competition->getId().'/gameday',
+        'admin/config/betgame/competition/'.$competition->getId().'/gameday',
         t('Note: This action cannot be undone.'),
         t('Delete'),
         t('Cancel'),
@@ -189,12 +189,12 @@ function tippgame_competition_gameday_delete_form($form, &$form_state, $competit
   }
 }
 
-function tippgame_competition_gameday_delete_form_submit($form, &$form_state) {
+function betgame_competition_gameday_delete_form_submit($form, &$form_state) {
   $competition_id = $form['#competition_id'];
   $gameday_id = $form['#gameday_id'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/gameday';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/gameday';
 
-  if(tippgame_competition_dao()->deleteGameday($gameday_id)) {
+  if(betgame_competition_dao()->deleteGameday($gameday_id)) {
     drupal_set_message(t('Gameday deleted'));
   } else {
     drupal_set_message(t('Error occured while deleting gameday'));

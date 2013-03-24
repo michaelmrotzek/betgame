@@ -1,0 +1,7 @@
+name = "Betgame - Matchplan"
+description = "Module to generate tournament matchplans"
+package = "betgame"
+core = "7.x"
+dependencies[] = "betgame"
+configure = admin/config/betgame/matchplan
+files[] = tests/betgame_matchplan.test

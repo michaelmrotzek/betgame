@@ -1,6 +1,6 @@
 <?php
 
-function tippgame_matchplan_page() {
+function betgame_matchplan_page() {
   $ra = array(
   );
 
@@ -9,7 +9,7 @@ function tippgame_matchplan_page() {
   );
 
 
-  $ra['list'] = drupal_get_form('tippgame_matchplan_form');
+  $ra['list'] = drupal_get_form('betgame_matchplan_form');
 
   return $ra;
 }
@@ -18,21 +18,21 @@ function tippgame_matchplan_page() {
 /**
  * Implements hook_form().
  */
-function tippgame_matchplan_form($form, &$form_state) {
+function betgame_matchplan_form($form, &$form_state) {
   $form = array();
 
   $header = array(
-    'id' => array('data' => t('Id', array(), array('context' => 'tippgame')), 'field' => 'id'),
-    'name' => array('data' => t('Name', array(), array('context' => 'tippgame')), 'field' => 'name', 'sort' => 'desc'),
-    'groups' => array('data' => t('Groups', array(), array('context' => 'tippgame')), 'field' => 'groups'),
-    'teams' => array('data' => t('Teams', array(), array('context' => 'tippgame')), 'field' => 'teams'),
-    'gamedays' => array('data' => t('Gamedays', array(), array('context' => 'tippgame')), 'field' => 'gamedays'),
+    'id' => array('data' => t('Id', array(), array('context' => 'betgame')), 'field' => 'id'),
+    'name' => array('data' => t('Name', array(), array('context' => 'betgame')), 'field' => 'name', 'sort' => 'desc'),
+    'groups' => array('data' => t('Groups', array(), array('context' => 'betgame')), 'field' => 'groups'),
+    'teams' => array('data' => t('Teams', array(), array('context' => 'betgame')), 'field' => 'teams'),
+    'gamedays' => array('data' => t('Gamedays', array(), array('context' => 'betgame')), 'field' => 'gamedays'),
     'actions' => '',
   );
 
   $options = array();
 
-  $plans = tippgame_matchplan_dao()->findMatchPlans();
+  $plans = betgame_matchplan_dao()->findMatchPlans();
   foreach($plans as $matchplan) {
     $options[$matchplan->getId()] = array(
       'id' => $matchplan->getId(),
@@ -41,7 +41,7 @@ function tippgame_matchplan_form($form, &$form_state) {
       'teams' => $matchplan->getTeams(),
       'gamedays' => $matchplan->getGamedays(),
       'actions' => ''
-//          l(t('Edit'), 'admin/config/tippgame/matchplan/'.$matchplan->getId().'/edit')
+//          l(t('Edit'), 'admin/config/betgame/matchplan/'.$matchplan->getId().'/edit')
     );
   }
 
@@ -49,7 +49,7 @@ function tippgame_matchplan_form($form, &$form_state) {
     '#type' => 'tableselect',
     '#header' => $header,
     '#options' => $options,
-    '#empty' => t('No matchplan exists', array(), array('context' => 'tippgame')),
+    '#empty' => t('No matchplan exists', array(), array('context' => 'betgame')),
   );
 
 
@@ -65,18 +65,18 @@ function tippgame_matchplan_form($form, &$form_state) {
 // /**
 //  * Implements hook_form().
 //  */
-// function tippgame_matchplan_edit_form($form, &$form_state, MatchPlan $matchplan = NULL) {
+// function betgame_matchplan_edit_form($form, &$form_state, MatchPlan $matchplan = NULL) {
 //   $form = array();
   
 //   drupal_set_message('QA missing. Don´t know if it´s working', 'warning');
 
-//   $title = t('Create new Match Plan', array(), array('context' => 'tippgame'));
+//   $title = t('Create new Match Plan', array(), array('context' => 'betgame'));
 //   if($matchplan) {
 //     $form['id'] = array(
 //       '#type' => 'hidden',
 //       '#value' => $matchplan->getId(),
 //     );
-//     $title = t('Edit Match Plan', array(), array('context' => 'tippgame'));
+//     $title = t('Edit Match Plan', array(), array('context' => 'betgame'));
 //   }
 
 //   drupal_set_title($title);
@@ -90,7 +90,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 
 //   $form['name'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Name', array(), array('context' => 'tippgame')),
+//     '#title' => t('Name', array(), array('context' => 'betgame')),
 //     '#required' => TRUE,
 //     '#default_value' => $matchplan ? $matchplan->getName() : '',
 //   );
@@ -102,7 +102,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $form['section']['teams'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Teams', array(), array('context' => 'tippgame')),
+//     '#title' => t('Teams', array(), array('context' => 'betgame')),
 //     '#size' => 4,
 //     '#maxlength' => 3,
 //     '#required' => TRUE,
@@ -111,7 +111,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 
 //   $form['section']['groups'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Groups', array(), array('context' => 'tippgame')),
+//     '#title' => t('Groups', array(), array('context' => 'betgame')),
 //     '#size' => 4,
 //     '#maxlength' => 3,
 //     '#required' => TRUE,
@@ -120,7 +120,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 
 //   $form['section']['gamedays'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Gamedays', array(), array('context' => 'tippgame')),
+//     '#title' => t('Gamedays', array(), array('context' => 'betgame')),
 //     '#size' => 4,
 //     '#maxlength' => 3,
 //     '#required' => TRUE,
@@ -139,15 +139,15 @@ function tippgame_matchplan_form($form, &$form_state) {
 //     '#tree' => TRUE,
 //     '#prefix' => '<div id="fixtures-ajax-replace">',
 //     '#suffix' => '</div>',
-//     '#theme' => 'tippgame_matchplan_admin_form_fixtures',
+//     '#theme' => 'betgame_matchplan_admin_form_fixtures',
 //   );
 
 //   $form['fixtures-wrapper']['addfixture'] = array(
 //     '#type' => 'submit',
-//     '#submit' => array('tippgame_matchplan_add_fixture_submit'),
-//     '#value' => t('Add Fixture', array(), array('context' => 'tippgame')),
+//     '#submit' => array('betgame_matchplan_add_fixture_submit'),
+//     '#value' => t('Add Fixture', array(), array('context' => 'betgame')),
 //     '#ajax' => array(
-//       'callback' => 'tippgame_addfixture_ajax_callback',
+//       'callback' => 'betgame_addfixture_ajax_callback',
 //       'wrapper'  => 'fixtures-ajax-replace',
 //       //'method' => 'append',
 //       'effect' => 'fade',
@@ -157,13 +157,13 @@ function tippgame_matchplan_form($form, &$form_state) {
 
 //   $fixtures = array();
 //   if($matchplan && !$form_state['submitted']) {
-//     $data = tippgame_matchplan_dao()->findFixtures($matchplan->getId());
+//     $data = betgame_matchplan_dao()->findFixtures($matchplan->getId());
 //     foreach($data as $f) {
 //       $fixtures[] = (array) $f;
 //     }
 //   }
 
-//   $fixtures = array_merge(_tippgame_matchplan_extract_fixtures($form_state), $fixtures);
+//   $fixtures = array_merge(_betgame_matchplan_extract_fixtures($form_state), $fixtures);
 
 //   if (isset($form_state['num_fixtures']) && $form_state['num_fixtures'] > count($fixtures)) {
 //     $fixtures[] = array();
@@ -179,11 +179,11 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   }
 
 //   foreach($fixtures as $delta => $fixture) {
-//     $form['fixtures-wrapper']['fixtures'][$delta] = _tippgame_matchplan_fixture_form($delta, $fixture);
+//     $form['fixtures-wrapper']['fixtures'][$delta] = _betgame_matchplan_fixture_form($delta, $fixture);
 //     $form['fixtures-wrapper']['fixtures'][$delta]['remove'] = array(
 //       '#type' => 'submit',
-//       '#submit' => array('tippgame_matchplan_remove_fixture_submit'),
-//       '#value' => t('Remove', array(), array('context' => 'tippgame')),
+//       '#submit' => array('betgame_matchplan_remove_fixture_submit'),
+//       '#value' => t('Remove', array(), array('context' => 'betgame')),
 //       '#limit_validation_errors' => array(),
 //     );
 //   }
@@ -197,7 +197,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   return $form;
 // }
 
-// function _tippgame_matchplan_fixture_form($delta, array $fixture) {
+// function _betgame_matchplan_fixture_form($delta, array $fixture) {
 //   $form['#tree'] = TRUE;
 
 
@@ -209,9 +209,9 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   $form['fixturetype'] = array(
 //     '#type' => 'radios',
 //     '#options' => array(
-//       'FixtureGroupMatch' =>  t('Group match', array(), array('context' => 'tippgame')),
-//       'FixtureGroupPhaseResult' =>  t('Group phase result', array(), array('context' => 'tippgame')),
-//       'FixtureAllOrNothingMatch' =>  t('K.O. match result', array(), array('context' => 'tippgame')),
+//       'FixtureGroupMatch' =>  t('Group match', array(), array('context' => 'betgame')),
+//       'FixtureGroupPhaseResult' =>  t('Group phase result', array(), array('context' => 'betgame')),
+//       'FixtureAllOrNothingMatch' =>  t('K.O. match result', array(), array('context' => 'betgame')),
 //     ),
 //     '#default_value' => isset($fixture['fixturetype']) ? $fixture['fixturetype'] : 'FixtureGroupMatch',
 //   );
@@ -223,7 +223,7 @@ function tippgame_matchplan_form($form, &$form_state) {
   
 //   $homegroup = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Group', array(), array('context' => 'tippgame')),
+//     '#title' => t('Group', array(), array('context' => 'betgame')),
 //     '#size' => 4,
 //     '#maxlength' => 3,
 //     '#default_value' => isset($fixture['homegroup']) ? $fixture['homegroup'] : NULL,
@@ -235,7 +235,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $homegroupsetposition = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Set position', array(), array('context' => 'tippgame')),
+//     '#title' => t('Set position', array(), array('context' => 'betgame')),
 //     //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -248,7 +248,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $homegroupresultposition = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Result position', array(), array('context' => 'tippgame')),
+//     '#title' => t('Result position', array(), array('context' => 'betgame')),
 //     //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -261,7 +261,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $homegamenumber = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Game Number', array(), array('context' => 'tippgame')),
+//     '#title' => t('Game Number', array(), array('context' => 'betgame')),
 //     //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -311,7 +311,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 
 //   $guestgroup = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Group', array(), array('context' => 'tippgame')),
+//     '#title' => t('Group', array(), array('context' => 'betgame')),
 //     '#size' => 4,
 //     '#maxlength' => 3,
 //     '#default_value' => isset($fixture['guestgroup']) ? $fixture['guestgroup'] : NULL,
@@ -323,7 +323,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $guestgroupsetposition = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Set position', array(), array('context' => 'tippgame')),
+//     '#title' => t('Set position', array(), array('context' => 'betgame')),
 //     //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -336,7 +336,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $guestgroupresultposition = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Result position', array(), array('context' => 'tippgame')),
+//     '#title' => t('Result position', array(), array('context' => 'betgame')),
 //     //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -349,7 +349,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $guestgamenumber = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Game Number', array(), array('context' => 'tippgame')),
+//     '#title' => t('Game Number', array(), array('context' => 'betgame')),
 //     //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -402,7 +402,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 
 //   $form['weight'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Weight', array(), array('context' => 'tippgame')),
+//     '#title' => t('Weight', array(), array('context' => 'betgame')),
 //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -410,7 +410,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $form['gamedayindex'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Game number index?', array(), array('context' => 'tippgame')),
+//     '#title' => t('Game number index?', array(), array('context' => 'betgame')),
 //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -418,7 +418,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   );
 //   $form['gamenumber'] = array(
 //     '#type' => 'textfield',
-//     '#title' => t('Game number', array(), array('context' => 'tippgame')),
+//     '#title' => t('Game number', array(), array('context' => 'betgame')),
 //     '#title_display' => 'invisible',
 //     '#size' => 4,
 //     '#maxlength' => 3,
@@ -429,7 +429,7 @@ function tippgame_matchplan_form($form, &$form_state) {
 //   return $form;
 // }
 
-function _tippgame_matchplan_extract_fixtures($form_state) {
+function _betgame_matchplan_extract_fixtures($form_state) {
   $fixtures = array();
   if(isset($form_state['input']['fixtures']) && !empty($form_state['input']['fixtures'])) {
     foreach($form_state['input']['fixtures'] as $delta => $data) {
@@ -442,7 +442,7 @@ function _tippgame_matchplan_extract_fixtures($form_state) {
 // /**
 //  * Submit handler for the "Add Fixture" button.
 //  */
-// function tippgame_matchplan_add_fixture_submit($form, &$form_state) {
+// function betgame_matchplan_add_fixture_submit($form, &$form_state) {
 //   // Increment the number of tabs to be rendered.
 //   $form_state['num_fixtures']++;
 //   $form_state['rebuild'] = TRUE;
@@ -451,17 +451,17 @@ function _tippgame_matchplan_extract_fixtures($form_state) {
 // /**
 //  * Submit handler for the "Remove" button.
 //  */
-// function tippgame_matchplan_remove_fixture_submit($form, &$form_state) {
+// function betgame_matchplan_remove_fixture_submit($form, &$form_state) {
 //   // Get the tab delta for the clicked button.
 //   $delta = $form_state['clicked_button']['#parents'][1];
 //   $form_state['to_remove'] = $delta;
 //   $form_state['rebuild'] = TRUE;
 // }
 
-// function tippgame_matchplan_edit_form_validate($form, &$form_state) {
+// function betgame_matchplan_edit_form_validate($form, &$form_state) {
 //   // TODO: validation finishing
   
-//   $fixtures = _tippgame_matchplan_extract_fixtures($form_state);
+//   $fixtures = _betgame_matchplan_extract_fixtures($form_state);
 //   foreach($fixtures as $data) {
 //     // validate per type and defaukt plan data
 //     $teams = $form_state['values'][''];
@@ -502,18 +502,18 @@ function _tippgame_matchplan_extract_fixtures($form_state) {
 // }
 
 // // TODO: does not work yet
-// function tippgame_matchplan_edit_form_submit($form, &$form_state) {
-//   $form_state['redirect'] = 'admin/config/tippgame/matchplan';
+// function betgame_matchplan_edit_form_submit($form, &$form_state) {
+//   $form_state['redirect'] = 'admin/config/betgame/matchplan';
 
 //   $values = $form_state['values'];
 
 //   $tx = db_transaction();
 //   try {
 //     $matchplan = EntityHelper::array2object($values, 'MatchPlan');
-//     $matchplan_id = tippgame_matchplan_dao()->storeMatchPlan($matchplan);
+//     $matchplan_id = betgame_matchplan_dao()->storeMatchPlan($matchplan);
 
 //     $i = 0;
-//     $fixtures = _tippgame_matchplan_extract_fixtures($form_state);
+//     $fixtures = _betgame_matchplan_extract_fixtures($form_state);
 //     foreach($fixtures as $data) {
 //       $i++;
 //       if(isset($data['id']) && !$data['id']) {
@@ -526,7 +526,7 @@ function _tippgame_matchplan_extract_fixtures($form_state) {
 //         $fixture->setGamedayindex($i);
 //       }
 
-//       tippgame_matchplan_dao()->storeFixture($fixture);
+//       betgame_matchplan_dao()->storeFixture($fixture);
 //     }
 //   } catch(Exception $e) {
 //     $tx->rollback();
@@ -535,12 +535,12 @@ function _tippgame_matchplan_extract_fixtures($form_state) {
 // }
 
 
-// function tippgame_addfixture_ajax_callback($form, $form_state) {
+// function betgame_addfixture_ajax_callback($form, $form_state) {
 //   return $form['fixtures-wrapper']['fixtures'];
 // }
 
 
-function theme_tippgame_matchplan_admin_form_fixtures($variables) {
+function theme_betgame_matchplan_admin_form_fixtures($variables) {
   $rows= array();
 
   $fixtures = $variables['fixtures'];

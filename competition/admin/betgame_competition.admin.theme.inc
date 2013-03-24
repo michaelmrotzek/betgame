@@ -14,7 +14,7 @@
  *             do not set or leave empty to render table without a header
  *         - colweight: name of weight column, if set and form field exists the rows of the table will be draggable to sort
  */
-function theme_tippgame_competition_admin_form_table($variables) {
+function theme_betgame_competition_admin_form_table($variables) {
   $rows = array();
 
   $data = $variables['data'];

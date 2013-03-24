@@ -10,12 +10,12 @@
 /**
  * Implements hook_init().
  */
-function tippgame_matchplan_init() {
-  module_load_include('php', 'tippgame_matchplan', 'lib/MatchPlanEntity');
+function betgame_matchplan_init() {
+  module_load_include('php', 'betgame_matchplan', 'lib/MatchPlanEntity');
 }
 
-function tippgame_matchplan_dao() {
-  module_load_include('php', 'tippgame_matchplan', 'lib/MatchPlanDao');
+function betgame_matchplan_dao() {
+  module_load_include('php', 'betgame_matchplan', 'lib/MatchPlanDao');
   
   $cache = &drupal_static(__FUNCTION__, array());
   if(!isset($cache['Dao'])) {
@@ -28,37 +28,37 @@ function tippgame_matchplan_dao() {
  * Implements hook_menu().
  * 
  */
-function tippgame_matchplan_menu() {
+function betgame_matchplan_menu() {
   $items = array();
 
-  $items['admin/config/tippgame/matchplan'] = array(
+  $items['admin/config/betgame/matchplan'] = array(
     'title' => 'Matchplan Admin',
     'description' => '',
-    'page callback' => 'tippgame_matchplan_page',
+    'page callback' => 'betgame_matchplan_page',
     'page arguments' => array(),
     'access arguments' => array('administer matchplan'),
-    'file' => 'tippgame_matchplan.admin.inc',
+    'file' => 'betgame_matchplan.admin.inc',
   );
   
   // currently not supported
   /* 
-  $items['admin/config/tippgame/matchplan/add'] = array(
+  $items['admin/config/betgame/matchplan/add'] = array(
     'title' => 'Add Matchplan',
     'description' => '',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('tippgame_matchplan_edit_form'),
+    'page arguments' => array('betgame_matchplan_edit_form'),
     'access arguments' => array('administer matchplan'),
-    'file' => 'tippgame_matchplan.admin.inc',
+    'file' => 'betgame_matchplan.admin.inc',
     'type' => MENU_LOCAL_ACTION,
   );
   
-  $items['admin/config/tippgame/matchplan/%matchplan/edit'] = array(
+  $items['admin/config/betgame/matchplan/%matchplan/edit'] = array(
     'title' => 'Matchplan Admin',
     'description' => '',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('tippgame_matchplan_edit_form', 4),
+    'page arguments' => array('betgame_matchplan_edit_form', 4),
     'access arguments' => array('administer matchplan'),
-    'file' => 'tippgame_matchplan.admin.inc',
+    'file' => 'betgame_matchplan.admin.inc',
     'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
   );
   */
@@ -74,17 +74,17 @@ function tippgame_matchplan_menu() {
  * @return Matchplan or NULL
  */
 function matchplan_load($id) {
-  return tippgame_matchplan_dao()->findMatchPlan($id);
+  return betgame_matchplan_dao()->findMatchPlan($id);
 }
 
 /**
  * Implements hook_theme().
  */
-function tippgame_matchplan_theme($existing, $type, $theme, $path) {
+function betgame_matchplan_theme($existing, $type, $theme, $path) {
   return array(
-    'tippgame_matchplan_admin_form_fixtures' => array(
+    'betgame_matchplan_admin_form_fixtures' => array(
       'render element' => 'fixtures',
-      'file' => 'tippgame_matchplan.admin.inc',
+      'file' => 'betgame_matchplan.admin.inc',
     )
   );
 }
@@ -92,7 +92,7 @@ function tippgame_matchplan_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_permission().
  */
-function tippgame_matchplan_permission() {
+function betgame_matchplan_permission() {
    return array(
     'administer matchplan' => array(
       'title' => t('Administer Matchplan'), 
@@ -101,10 +101,10 @@ function tippgame_matchplan_permission() {
   );
 }
 
-function _tippgame_matchplan_select_matchplan() {
+function _betgame_matchplan_select_matchplan() {
   $cache = &drupal_static(__FUNCTION__, array());
   if(!isset($cache['matchplans'])) {
-    $plans = tippgame_matchplan_dao()->findMatchPlans();
+    $plans = betgame_matchplan_dao()->findMatchPlans();
     foreach($plans as $p) {
       $cache['matchplans'][$p->getId()] = $p->getName();
     }

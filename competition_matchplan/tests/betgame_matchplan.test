@@ -11,15 +11,15 @@ class TippgameMatchplanTestCase extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('tippgame', 'tippgame_matchplan');
+    parent::setUp('betgame', 'betgame_matchplan');
 
-    $this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer tippgame'));
+    $this->privileged_user = $this->drupalCreateUser(array('administer matchplan', 'administer betgame'));
     $this->drupalLogin($this->privileged_user);
 
   }
 
   public function testDaoInstantiation() {
-    $Dao = tippgame_matchplan_dao();
+    $Dao = betgame_matchplan_dao();
     $this->assertNotNull($Dao);
 
   }
@@ -32,7 +32,7 @@ class TippgameMatchplanTestCase extends DrupalWebTestCase {
     $matchplan->setGroups(1);
     $matchplan->setGamedays(30);
 
-    $Dao = tippgame_matchplan_dao();
+    $Dao = betgame_matchplan_dao();
     $Dao->storeMatchPlan($matchplan);
 
     $this->assertNotNull($Dao);
@@ -40,7 +40,7 @@ class TippgameMatchplanTestCase extends DrupalWebTestCase {
   }
 
   public function testCreateAndFind() {
-    $Dao = tippgame_matchplan_dao();
+    $Dao = betgame_matchplan_dao();
     $plans = $Dao->findMatchPlans();
     $defaultplans = count($plans);
     

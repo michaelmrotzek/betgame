@@ -1,7 +1,7 @@
 <?php 
 
 
-function _tippgame_competition_group_form(Competition $competition, Group $group, $viewmode = 'row') {
+function _betgame_competition_group_form(Competition $competition, Group $group, $viewmode = 'row') {
   $form = array();
 
   $detailed = (bool)($viewmode=='detail');
@@ -52,7 +52,7 @@ function _tippgame_competition_group_form(Competition $competition, Group $group
 /**
  * Implements hook_form().
  */
-function tippgame_competition_groups_form($form, &$form_state, Competition $competition) {
+function betgame_competition_groups_form($form, &$form_state, Competition $competition) {
   $form = array();
 
   if(!$competition) {
@@ -62,7 +62,7 @@ function tippgame_competition_groups_form($form, &$form_state, Competition $comp
 
   $form['data'] = array(
     '#tree' => TRUE,
-    '#theme' => 'tippgame_competition_admin_form_table',
+    '#theme' => 'betgame_competition_admin_form_table',
     '#c_render_options' => array(
       'entityname' => 'group',
       'colsheader' => array(
@@ -79,19 +79,19 @@ function tippgame_competition_groups_form($form, &$form_state, Competition $comp
     ),
   );
 
-  $groups = tippgame_competition_dao()->findGroups($competition->getId());
+  $groups = betgame_competition_dao()->findGroups($competition->getId());
   foreach($groups as $group) {
     $delta = $group->getId();
 
-    $form['data'][$delta] = _tippgame_competition_group_form($competition, $group);
+    $form['data'][$delta] = _betgame_competition_group_form($competition, $group);
 
     $form['data'][$delta]['actions']['edit'] = array(
-      '#markup' => l(t('Edit'), 'admin/config/tippgame/competition/'.$competition->getId().'/group/'.$group->getId().'/edit'),
+      '#markup' => l(t('Edit'), 'admin/config/betgame/competition/'.$competition->getId().'/group/'.$group->getId().'/edit'),
       '#prefix' => '<div class="action">',
       '#suffix' => '</div>',
     );
     $form['data'][$delta]['actions']['delete'] = array(
-      '#markup' => l(t('Delete'), 'admin/config/tippgame/competition/'.$competition->getId().'/group/'.$group->getId().'/delete'),
+      '#markup' => l(t('Delete'), 'admin/config/betgame/competition/'.$competition->getId().'/group/'.$group->getId().'/delete'),
       '#prefix' => '<div class="action">',
       '#suffix' => '</div>',
     );
@@ -106,19 +106,19 @@ function tippgame_competition_groups_form($form, &$form_state, Competition $comp
   return $form;
 }
 
-function tippgame_competition_groups_form_submit($form, &$form_state) {
+function betgame_competition_groups_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/';
+  $form_state['redirect'] = 'admin/config/betgame/competition/';
 
   if(isset($values['data'])) {
     foreach($values['data'] as $data) {
       $competition_id = $data['competition'];
       $group = EntityHelper::array2object($data, 'Group');
-      tippgame_competition_dao()->storeGroup($group);
+      betgame_competition_dao()->storeGroup($group);
     }
     drupal_set_message(t('Groups updated'));
 
-    $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/group';
+    $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/group';
 
   } else {
     drupal_set_message(t('Error while updating'), 'error');
@@ -129,7 +129,7 @@ function tippgame_competition_groups_form_submit($form, &$form_state) {
 /**
  * Implements hook_form().
  */
-function tippgame_competition_group_edit_form($form, &$form_state, Competition $competition, Group $group = NULL) {
+function betgame_competition_group_edit_form($form, &$form_state, Competition $competition, Group $group = NULL) {
   $form = array();
 
   if(!$competition) {
@@ -137,13 +137,13 @@ function tippgame_competition_group_edit_form($form, &$form_state, Competition $
     return $form;
   }
 
-  $title = t('Create new Group', array(), array('context' => 'tippgame'));
+  $title = t('Create new Group', array(), array('context' => 'betgame'));
   if($group) {
-    $title = t('Edit Group', array(), array('context' => 'tippgame'));
+    $title = t('Edit Group', array(), array('context' => 'betgame'));
   }
   drupal_set_title($title);
 
-  $form = _tippgame_competition_group_form($competition, $group, 'detail');
+  $form = _betgame_competition_group_form($competition, $group, 'detail');
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -151,18 +151,18 @@ function tippgame_competition_group_edit_form($form, &$form_state, Competition $
     '#value' => t('Save'),
   );
   $form['actions']['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'admin/config/tippgame/competition/'.$competition->getId().'/group'),
+    '#markup' => l(t('Cancel'), 'admin/config/betgame/competition/'.$competition->getId().'/group'),
   );
 
   return $form;
 }
 
-function tippgame_competition_group_edit_form_submit($form, &$form_state) {
+function betgame_competition_group_edit_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$values['competition'].'/group';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$values['competition'].'/group';
 
   $group = EntityHelper::array2object($values, 'Group');
-  tippgame_competition_dao()->storeGroup($group);
+  betgame_competition_dao()->storeGroup($group);
 
   drupal_set_message(t('Group saved'));
 }
@@ -172,7 +172,7 @@ function tippgame_competition_group_edit_form_submit($form, &$form_state) {
  *
  * Admin delete group.
  */
-function tippgame_competition_group_delete_form($form, &$form_state, $competition, $group) {
+function betgame_competition_group_delete_form($form, &$form_state, $competition, $group) {
   if(is_object($competition) && is_object($group)) {
     $form['#competition_id'] = $competition->getId();
     $form['#group_id'] = $group->getId();
@@ -180,7 +180,7 @@ function tippgame_competition_group_delete_form($form, &$form_state, $competitio
     return confirm_form(
         $form,
         t('Are you sure you want to delete group %title?', array('%title' => $group->getName())),
-        'admin/config/tippgame/competition/'.$competition->getId().'/group',
+        'admin/config/betgame/competition/'.$competition->getId().'/group',
         t('Note: This action cannot be undone.'),
         t('Delete'),
         t('Cancel'),
@@ -190,12 +190,12 @@ function tippgame_competition_group_delete_form($form, &$form_state, $competitio
   }
 }
 
-function tippgame_competition_group_delete_form_submit($form, &$form_state) {
+function betgame_competition_group_delete_form_submit($form, &$form_state) {
   $competition_id = $form['#competition_id'];
   $group_id = $form['#group_id'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/group';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/group';
 
-  if(tippgame_competition_dao()->deleteGroup($group_id)) {
+  if(betgame_competition_dao()->deleteGroup($group_id)) {
     drupal_set_message(t('Group deleted'));
   } else {
     drupal_set_message(t('Error occured while deleting group'));

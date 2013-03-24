@@ -1,0 +1,11 @@
+name = "Betgame - Competition"
+description = ""
+package = "betgame"
+core = "7.x"
+dependencies[] = "betgame"
+dependencies[] = "betgame_matchplan"
+configure = admin/config/betgame/competition
+
+files[] = tests/betgame_competition.test
+files[] = tests/betgame_competition.table.test
+

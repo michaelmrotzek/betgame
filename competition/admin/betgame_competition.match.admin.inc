@@ -1,6 +1,6 @@
 <?php 
 
-function _tippgame_competition_match_form(Competition $competition, Match $match, $viewmode = 'row') {
+function _betgame_competition_match_form(Competition $competition, Match $match, $viewmode = 'row') {
   $form = array();
 
   $detailed = (bool)($viewmode=='detail');
@@ -49,7 +49,7 @@ function _tippgame_competition_match_form(Competition $competition, Match $match
       '#title' => t('Gameday'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#default_value' => $match ? $match->getGameday() : 0,
-      '#options' => _tippgame_competition_select_gameday($competition),
+      '#options' => _betgame_competition_select_gameday($competition),
     );
     $form['groupid'] = array(
       '#type' => 'select',
@@ -57,7 +57,7 @@ function _tippgame_competition_match_form(Competition $competition, Match $match
       '#title' => t('Group'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#default_value' => $match ? $match->getGroupid() : 0,
-      '#options' => _tippgame_competition_select_group($competition),
+      '#options' => _betgame_competition_select_group($competition),
     );
   } else {
     $form['gameday'] = array(
@@ -76,14 +76,14 @@ function _tippgame_competition_match_form(Competition $competition, Match $match
       '#title' => t('Home'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#default_value' => $match ? $match->getHometeam() : '',
-      '#options' => _tippgame_competition_select_team($competition),
+      '#options' => _betgame_competition_select_team($competition),
     );
     $form['guestteam'] = array(
       '#type' => 'select',
       '#title' => t('Guest'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#default_value' => $match ? $match->getGuestteam() : '',
-      '#options' => _tippgame_competition_select_team($competition),
+      '#options' => _betgame_competition_select_team($competition),
     );
   } else {
     $form['hometeam'] = array(
@@ -91,14 +91,14 @@ function _tippgame_competition_match_form(Competition $competition, Match $match
       '#title' => t('Home'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#value' => $match ? $match->getHometeam() : '',
-      '#suffix' => theme('tippgame_competition_match_team', array('match' => $match, 'type' => 'home', 'useShortname' => !$detailed)),
+      '#suffix' => theme('betgame_competition_match_team', array('match' => $match, 'type' => 'home', 'useShortname' => !$detailed)),
     );
     $form['guestteam'] = array(
       '#type' => 'hidden',
       '#title' => t('Guest'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#value' => $match ? $match->getGuestteam() : '',
-      '#suffix' => theme('tippgame_competition_match_team', array('match' => $match, 'type' => 'guest', 'useShortname' => !$detailed)),
+      '#suffix' => theme('betgame_competition_match_team', array('match' => $match, 'type' => 'guest', 'useShortname' => !$detailed)),
     );
   }
 
@@ -117,13 +117,13 @@ function _tippgame_competition_match_form(Competition $competition, Match $match
       '#title' => t('Return Match'),
       '#title_display' => $detailed ? 'before' : 'invisible',
       '#default_value' => $match ? $match->getReturnmatchgamenumber() : '',
-      '#options' => _tippgame_competition_select_match($competition),
+      '#options' => _betgame_competition_select_match($competition),
     );
   }
 
   if(!$detailed) {
     $form['_result'] = array(
-      '#markup' => theme('tippgame_competition_match_result', array('match' => $match)),
+      '#markup' => theme('betgame_competition_match_result', array('match' => $match)),
     );
   }
 
@@ -133,7 +133,7 @@ function _tippgame_competition_match_form(Competition $competition, Match $match
 /**
  * Implements hook_form().
  */
-function tippgame_competition_matchs_form($form, &$form_state, Competition $competition) {
+function betgame_competition_matchs_form($form, &$form_state, Competition $competition) {
   $form = array();
 
   if(!$competition) {
@@ -143,7 +143,7 @@ function tippgame_competition_matchs_form($form, &$form_state, Competition $comp
 
   $form['data'] = array(
     '#tree' => TRUE,
-    '#theme' => 'tippgame_competition_admin_form_table',
+    '#theme' => 'betgame_competition_admin_form_table',
     '#c_render_options' => array(
       'entityname' => 'match',
       'colsheader' => array(
@@ -177,19 +177,19 @@ function tippgame_competition_matchs_form($form, &$form_state, Competition $comp
     ),
   );
 
-  $matchs = tippgame_competition_dao()->findMatchs($competition->getId());
+  $matchs = betgame_competition_dao()->findMatchs($competition->getId());
   foreach($matchs as $match) {
     $delta = $match->getId();
 
-    $form['data'][$delta] = _tippgame_competition_match_form($competition, $match);
+    $form['data'][$delta] = _betgame_competition_match_form($competition, $match);
 
     //$form['data'][$delta]['actions']['edit'] = array(
-    //  '#markup' => l(t('Edit'), 'admin/config/tippgame/competition/'.$competition->getId().'/match/'.$match->getId().'/edit'),
+    //  '#markup' => l(t('Edit'), 'admin/config/betgame/competition/'.$competition->getId().'/match/'.$match->getId().'/edit'),
     //  '#prefix' => '<div class="action">',
     //  '#suffix' => '</div>',
     //);
     //$form['data'][$delta]['actions']['delete'] = array(
-    //  '#markup' => l(t('Delete'), 'admin/config/tippgame/competition/'.$competition->getId().'/match/'.$match->getId().'/delete'),
+    //  '#markup' => l(t('Delete'), 'admin/config/betgame/competition/'.$competition->getId().'/match/'.$match->getId().'/delete'),
     //  '#prefix' => '<div class="action">',
     //  '#suffix' => '</div>',
     //);
@@ -204,29 +204,29 @@ function tippgame_competition_matchs_form($form, &$form_state, Competition $comp
   return $form;
 }
 
-function tippgame_competition_matchs_form_submit($form, &$form_state) {
+function betgame_competition_matchs_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition';
+  $form_state['redirect'] = 'admin/config/betgame/competition';
 
   if(isset($values['data'])) {
     foreach($values['data'] as $data) {
       $competition_id = $data['competition'];
       $match = EntityHelper::array2object($data, 'Match');
-      tippgame_competition_dao()->storeMatch($match);
+      betgame_competition_dao()->storeMatch($match);
 
       // we have to set return matches marked so that we can handle it
       if($data['returnmatchgamenumber']) {
-        if(($m = tippgame_competition_dao()->findMatchByGamenumber($competition_id, $data['returnmatchgamenumber']))) {
+        if(($m = betgame_competition_dao()->findMatchByGamenumber($competition_id, $data['returnmatchgamenumber']))) {
           $m->setType(MATCH_TYPE_ALLORNOTHING_RETURNLEG);
           $m->setReturnmatchgamenumber($match->getGamenumber());
 
-          tippgame_competition_dao()->storeMatch($m);
+          betgame_competition_dao()->storeMatch($m);
         }
       }
     }
     drupal_set_message(t('Matches updated'));
 
-    $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/match';
+    $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/match';
 
   } else {
     drupal_set_message(t('Error while updating'), 'error');
@@ -238,7 +238,7 @@ function tippgame_competition_matchs_form_submit($form, &$form_state) {
 /**
  * Implements hook_form().
  */
-function tippgame_competition_match_edit_form($form, &$form_state, Competition $competition, Match $match = NULL) {
+function betgame_competition_match_edit_form($form, &$form_state, Competition $competition, Match $match = NULL) {
   $form = array();
 
   if(!$competition) {
@@ -246,14 +246,14 @@ function tippgame_competition_match_edit_form($form, &$form_state, Competition $
     return $form;
   }
 
-  $title = t('Create new Match', array(), array('context' => 'tippgame'));
+  $title = t('Create new Match', array(), array('context' => 'betgame'));
   if($match) {
-    $title = t('Edit Match', array(), array('context' => 'tippgame'));
+    $title = t('Edit Match', array(), array('context' => 'betgame'));
   }
 
   drupal_set_title($title);
 
-  $form += _tippgame_competition_match_form($competition, $match, 'detail');
+  $form += _betgame_competition_match_form($competition, $match, 'detail');
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -261,26 +261,26 @@ function tippgame_competition_match_edit_form($form, &$form_state, Competition $
     '#value' => t('Save'),
   );
   $form['actions']['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'admin/config/tippgame/competition/'.$competition->getId().'/match'),
+    '#markup' => l(t('Cancel'), 'admin/config/betgame/competition/'.$competition->getId().'/match'),
   );
 
   return $form;
 }
 
-function tippgame_competition_match_edit_form_submit($form, &$form_state) {
+function betgame_competition_match_edit_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$values['competition'].'/match';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$values['competition'].'/match';
 
   $match = EntityHelper::array2object($values, 'Match');
-  tippgame_competition_dao()->storeMatch($match);
+  betgame_competition_dao()->storeMatch($match);
 
   // we have to set return matches marked so that we can handle it
   if($data['returnmatchgamenumber']) {
-    if(($m = tippgame_competition_dao()->findMatchByGamenumber($competition_id, $data['returnmatchgamenumber']))) {
+    if(($m = betgame_competition_dao()->findMatchByGamenumber($competition_id, $data['returnmatchgamenumber']))) {
       $m->setType(MATCH_TYPE_ALLORNOTHING_RETURNLEG);
       $m->setReturnmatchgamenumber($match->getGamenumber());
 
-      tippgame_competition_dao()->storeMatch($m);
+      betgame_competition_dao()->storeMatch($m);
     }
   }
 
@@ -292,7 +292,7 @@ function tippgame_competition_match_edit_form_submit($form, &$form_state) {
  *
  * Admin delete match.
  */
-function tippgame_competition_match_delete_form($form, &$form_state, $competition, $match) {
+function betgame_competition_match_delete_form($form, &$form_state, $competition, $match) {
   if(is_object($competition) && is_object($match)) {
 
     $form['#competition_id'] = $competition->getId();
@@ -301,7 +301,7 @@ function tippgame_competition_match_delete_form($form, &$form_state, $competitio
     return confirm_form(
         $form,
         t('Are you sure you want to delete match %title?', array('%title' => $match->getGamenumber())),
-        'admin/config/tippgame/competition/'.$competition->getId().'/match',
+        'admin/config/betgame/competition/'.$competition->getId().'/match',
         t('Note: This action cannot be undone.'),
         t('Delete'),
         t('Cancel'),
@@ -311,12 +311,12 @@ function tippgame_competition_match_delete_form($form, &$form_state, $competitio
   }
 }
 
-function tippgame_competition_match_delete_form_submit($form, &$form_state) {
+function betgame_competition_match_delete_form_submit($form, &$form_state) {
   $competition_id = $form['#competition_id'];
   $match_id = $form['#match_id'];
-  $form_state['redirect'] = 'admin/config/tippgame/competition/'.$competition_id.'/match';
+  $form_state['redirect'] = 'admin/config/betgame/competition/'.$competition_id.'/match';
 
-  if(tippgame_competition_dao()->deleteMatch($match_id)) {
+  if(betgame_competition_dao()->deleteMatch($match_id)) {
     drupal_set_message(t('Match deleted'));
   } else {
     drupal_set_message(t('Error occured while deleting match'));
