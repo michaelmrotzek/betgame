@@ -6,16 +6,16 @@ class Condition {
   public $operator;
 
   /**
-   * 
+   *
    * @param unknown_type $field
-   * @param string|array $value Value or array. If array then it will be handled as a or. 
+   * @param string|array $value Value or array. If array then it will be handled as a or.
    * @param unknown_type $operator
    */
   function Condition($field, $value, $operator = '=') {
     $this->field = $field;
     $this->value = $value;
     $this->operator = $operator;
-    
+
   }
 }
 class Order {
@@ -28,11 +28,11 @@ class Order {
   }
 }
 
-abstract class AbstractEntityDao {
+abstract class AbstractEntityDao extends AbstractDao {
 
   /**
-   * Each implementation needs to define Class name to databse table mapping of its entities.
-   * 
+   * Each implementation needs to define Class name to database table mapping of its entities.
+   *
    * @return array Mapping with Classname as key and Databse table name as value.
    */
   abstract function entityTableMap();
@@ -44,7 +44,7 @@ abstract class AbstractEntityDao {
 
   /**
    * Retrieves all entities.
-   * 
+   *
    * @param string $classname
    * @param array $conditions List of query conditions defined by Condition objects.
    * @param array $orderby List of order definitions as Order objects.
@@ -56,6 +56,67 @@ abstract class AbstractEntityDao {
     $table = $this->getEntityTable($classname);
     if(!$table) {
       throw new Exception('No db table mapping found for entity ' . $classname);
+    }
+    return $this->findEntitiesTable($table, $classname, $conditions, $orderby, $groupby);
+  }
+
+  /**
+   * Gets a entity by its id.
+   *
+   * @param string $classname
+   * @param integer $id
+   * @return IEntity The requested IEntity subclass or NULL if not exists.
+   */
+  function findEntity($classname, $id) {
+    $conditions = array();
+    $conditions[] = new Condition('id', $id);
+    $order = array();
+
+    $entities = $this->findEntities($classname, $conditions, $order);
+    if(!empty($entities)) {
+      return array_shift($entities);
+    }
+    return NULL;
+  }
+
+  /**
+   * Stores a entity. If not exists it will be created, otherwise updated.
+   *
+   * @param IEntity $entity
+   * @throws Exception
+   * @return integer If entity is new the id of the entity.
+   */
+  function storeEntity(IEntity $entity) {
+    $table = $this->getEntityTable(get_class($entity));
+    if(!$table) {
+      throw new Exception('No db table mapping found for entity ' . get_class($entity));
+    }
+    return $this->storeEntityTable($table, $entity);
+  }
+
+  /**
+   * Deletes an IEntity based on its id.
+   *
+   * @param string $classname
+   * @param array<integer> $ids
+   * @throws Exception
+   * @return boolean TRUE if successful, FALSE otherwise.
+   */
+  function deleteEntities($classname, array $ids) {
+    $table = $this->getEntityTable($classname);
+    if(!$table) {
+      throw new Exception('No db table mapping found for entity ' . $classname);
+    }
+    return $this->deleteEntitesTable($table, $classname, $ids);
+  }
+
+}
+
+abstract class AbstractDao {
+
+  function findEntitiesTable($table, $classname, array $conditions = array(), array $orderby = array(), array $groupby = array()) {
+    if(!$table) {
+      throw new Exception('No db table set!');
     }
 
     $query = db_select($table);
@@ -71,7 +132,7 @@ abstract class AbstractEntityDao {
               $condition_or->condition($condition->field, $value, $condition->operator);
             }
             $query->condition($condition_or);
-                
+
           } else {
             $query->condition($condition->field, $condition->value, $condition->operator);
           }
@@ -105,43 +166,16 @@ abstract class AbstractEntityDao {
 
   }
 
-  /**
-   * Gets a entity by its id.
-   * 
-   * @param string $classname
-   * @param integer $id
-   * @return IEntity The requested IEntity subclass or NULL if not exists.
-   */
-  function findEntity($classname, $id) {
-    $conditions = array();
-    $conditions[] = new Condition('id', $id);
-    $order = array();
-
-    $entities = $this->findEntities($classname, $conditions, $order);
-    if(!empty($entities)) {
-      return array_shift($entities);
-    }
-    return NULL;
-  }
-
-  /**
-   * Stores a entity. If not exists it will be created, otherwise updated.
-   *
-   * @param IEntity $entity
-   * @throws Exception
-   * @return integer If entity is new the id of the entity.
-   */
-  function storeEntity(IEntity $entity) {
-    $table = $this->getEntityTable(get_class($entity));
+  function storeEntityTable($table, IEntity $entity) {
     if(!$table) {
-      throw new Exception('No db table mapping found for entity ' . get_class($entity));
+      throw new Exception('No db table set!');
     }
 
     $data = (array) $entity;
     unset($data['id']);
 
     if($entity->getId()) {
-      $classname = get_class($entity); 
+      $classname = get_class($entity);
       $id = $entity->getId();
       $beforeEntity = $this->findEntity($classname, $id);
 
@@ -154,13 +188,18 @@ abstract class AbstractEntityDao {
         // only call update hook if data have been changed
         module_invoke_all('betgame_entity_update', $entity);
       }
-      
+
       return $entity->getId();
 
     } else {
-      return db_insert($table)
+      $id = db_insert($table)
       ->fields($data)
       ->execute();
+
+      $entity->setId($id);
+      module_invoke_all('betgame_entity_create', $entity);
+
+      return $id;
 
     }
 
@@ -168,23 +207,14 @@ abstract class AbstractEntityDao {
 
   }
 
-  /**
-   * Deletes an IEntity based on its id.
-   *
-   * @param string $classname
-   * @param array<integer> $ids
-   * @throws Exception
-   * @return boolean TRUE if successful, FALSE otherwise.
-   */
-  function deleteEntities($classname, array $ids) {
+  protected function deleteEntitesTable($table, $classname, array $ids) {
+    if(!$table) {
+      throw new Exception('No db table set!');
+    }
+
     if($ids) {
       $conditions = array();
       $conditions[] = new Condition('id', $ids, 'IN');
-
-      $table = $this->getEntityTable($classname);
-      if(!$table) {
-        throw new Exception('No db table mapping found for entity ' . $classname);
-      }
 
       $query = db_delete($table);
 
@@ -197,7 +227,7 @@ abstract class AbstractEntityDao {
       }
 
       $query->execute();
-      
+
       module_invoke_all('betgame_entity_delete', $classname, $ids);
 
       return TRUE;
@@ -205,7 +235,6 @@ abstract class AbstractEntityDao {
     }
     return FALSE;
   }
-
 }
 
 class EntityHelper {

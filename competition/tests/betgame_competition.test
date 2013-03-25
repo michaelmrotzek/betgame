@@ -1,13 +1,13 @@
 <?php 
 
-class TippgameCompetitionTestCase extends DrupalWebTestCase {
+class BetgameCompetitionTestCase extends DrupalWebTestCase {
   protected $privileged_user;
 
   public static function getInfo() {
     return array(
-      'name' => 'Tippgame Competition unit tests',
+      'name' => 'Betgame Competition unit tests',
       'description' => 'Test that Competition works properly.',
-      'group' => 'Tippgame',
+      'group' => 'Betgame',
     );
   }
 

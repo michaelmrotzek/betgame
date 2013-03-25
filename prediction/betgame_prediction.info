@@ -1,0 +1,9 @@
+name = "Betgame - Prediction"
+description = ""
+package = "betgame"
+core = "7.x"
+dependencies[] = "betgame_competition"
+;configure = admin/config/betgame/prediction
+
+files[] = test/betgame_prediction.test
+

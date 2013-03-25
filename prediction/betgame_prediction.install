@@ -1,0 +1,112 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function betgame_prediction_schema() {
+  //
+  $schema['betgame_prediction'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'competitionid' => array(
+        'type' => 'int',
+      ),
+      'matchid' => array(
+        'type' => 'int',
+      ),
+      'userid' => array(
+        'type' => 'int',
+      ),
+      'home' => array(
+        'type' => 'int',
+      ),
+      'guest' => array(
+        'type' => 'int',
+      ),
+      'score' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+      'compeusermatch' => array('competitionid', 'userid', 'matchid'),
+    ),
+    'primary key' => array('id'),
+  );
+  
+  $schema['betgame_prediction_points'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'competitionid' => array(
+        'type' => 'int',
+      ),
+      'userid' => array(
+        'type' => 'int',
+      ),
+      'score' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+      'compeuser' => array('competitionid', 'userid'),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_enable().
+ *
+function betgame_prediction_enable() {
+  $competitions = betgame_competition_dao()->findCompetitions();
+  foreach($competitions as $competition) {
+    $tablename = betgame_prediction_tablename($competition->getId());
+    betgame_prediction_schema_competition_create($tablename);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+function betgame_prediction_uninstall() {
+  $competitions = betgame_competition_dao()->findCompetitions();
+  foreach($competitions as $competition) {
+    $tablename = betgame_prediction_tablename($competition->getId());
+    betgame_prediction_schema_competition_delete($tablename);
+  }
+}
+
+function betgame_prediction_schema_competition_create($tablename) {
+  if(!db_table_exists($tablename)) {
+    $schema = drupal_get_schema('betgame_prediction');
+    db_create_table($tablename, $schema);
+    
+    watchdog('betgame_prediction', 'Created %table', array('%table' => $tablename), WATCHDOG_NOTICE);
+  }
+}
+function betgame_prediction_schema_competition_delete($tablename) {
+  if(db_table_exists($tablename)) {
+    db_drop_table($tablename);
+    
+    watchdog('betgame_prediction', 'Dropped %table', array('%table' => $tablename), WATCHDOG_NOTICE);
+  }
+}
+*/
+

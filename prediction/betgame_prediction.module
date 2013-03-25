@@ -1,0 +1,46 @@
+<?php 
+
+/**
+ * Implements hook_init().
+ */
+function betgame_prediction_init() {
+  module_load_include('php', 'betgame_prediction', 'lib/PredictionEntity');
+}
+
+function betgame_prediction_dao() {
+  module_load_include('php', 'betgame_prediction', 'lib/PredictionDao');
+
+  $cache = &drupal_static(__FUNCTION__, array());
+  if(!isset($cache['Dao'])) {
+    $cache['Dao'] = new PredictionDao();
+  }
+  return $cache['Dao'];
+}
+
+
+/**
+ * Implements hook_betgame_entity_create()
+ *
+function betgame_prediction_betgame_entity_create(IEntity $entity) {
+  if($entity instanceof Competition) {
+    module_load_include('install', 'betgame_prediction');
+    
+    $tablename = betgame_prediction_dao()->getTableName($entity->getId());
+    betgame_prediction_schema_competition_create($tablename);
+  }
+}
+
+/**
+ * Implements hook_betgame_entity_delete();
+ *
+function betgame_prediction_betgame_entity_delete($entityclass, $entity_ids) {
+  if($entityclass === 'Competition') {
+    module_load_include('install', 'betgame_prediction');
+    
+    foreach($entity_ids as $id) {
+      $tablename = betgame_prediction_dao()->getTableName($id);
+      betgame_prediction_schema_competition_delete($tablename);
+    }
+  }
+}
+*/

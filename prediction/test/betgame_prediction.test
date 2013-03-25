@@ -1,0 +1,63 @@
+<?php 
+
+class BetgamePredictionTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Betgame Prediction unit tests',
+      'description' => 'Test that predictions works properly.',
+      'group' => 'Betgame',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('betgame', 'betgame_competition', 'betgame_prediction');
+  }
+  
+  public function testDaoInstantiation() {
+    $Dao = betgame_prediction_dao();
+    $this->assertNotNull($Dao);
+  
+  }
+
+  public function testRanking() {
+    $Dao = betgame_prediction_dao();
+    
+    $cid = 123456;
+
+    $p1 = new Prediction();
+    $p1->setMatchid(1);
+    $p1->setUserid(1);
+    $p1->setScore(1);
+    $Dao->storePrediction($cid, $p1);
+    
+    $p2 = new Prediction();
+    $p2->setMatchid(2);
+    $p2->setUserid(1);
+    $p2->setScore(1);
+    $Dao->storePrediction($cid, $p2);
+    
+    $p3 = new Prediction();
+    $p3->setMatchid(1);
+    $p3->setUserid(2);
+    $p3->setScore(3);
+    $Dao->storePrediction($cid, $p3);
+    
+    $p4 = new Prediction();
+    $p4->setMatchid(1);
+    $p4->setUserid(3);
+    $p4->setScore(2);
+    $Dao->storePrediction($cid, $p4);
+    
+    //$this->verbose('rank of 1: ' . print_r($Dao->getUserRank($cid, 1), TRUE));
+    //$this->assertEqual($Dao->getUserRank($cid, 1), 2);
+    //$this->assertEqual($Dao->getUserRank($cid, 2), 1);
+    
+    $rankings = $Dao->findRankings($cid, 1);
+    $this->verbose('rankings 1: ' . print_r($rankings, TRUE));
+    
+    $rankings2 = $Dao->findRankings($cid, 2);
+    $this->verbose('rankings 2: ' . print_r($rankings2, TRUE));
+    
+  }
+}
+

@@ -1,12 +1,12 @@
 <?php 
 
-class TippgameMatchplanTestCase extends DrupalWebTestCase {
+class BetgameMatchplanTestCase extends DrupalWebTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Tippgame Match Plan unit tests',
+      'name' => 'Betgame Match Plan unit tests',
       'description' => 'Test that MatchPlan works properly.',
-      'group' => 'Tippgame',
+      'group' => 'Betgame',
     );
   }
 
