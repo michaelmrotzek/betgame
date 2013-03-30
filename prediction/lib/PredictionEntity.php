@@ -58,3 +58,30 @@ class Prediction extends AbstractEntity {
     $this->score = $score;
   }
 }
+
+class PredictionResult extends AbstractEntity {
+  public $competitionid;
+  public $userid;
+  public $score;
+
+  public function getCompetitionid() {
+    return $this->competitionid;
+  }
+  public function setCompetitionid($competitionid) {
+    $this->competitionid = $competitionid;
+  }
+  
+  public function getUserid() {
+    return $this->userid;
+  }
+  public function setUserid($userid) {
+    $this->userid = $userid;
+  }
+  
+  public function getScore() {
+    return $this->score;
+  }
+  public function setScore($score) {
+    $this->score = $score;
+  }  
+}

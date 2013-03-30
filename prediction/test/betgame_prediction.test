@@ -12,16 +12,44 @@ class BetgamePredictionTestCase extends DrupalWebTestCase {
   function setUp() {
     parent::setUp('betgame', 'betgame_competition', 'betgame_prediction');
   }
-  
+
   public function testDaoInstantiation() {
     $Dao = betgame_prediction_dao();
     $this->assertNotNull($Dao);
-  
+
+  }
+
+  public function testStorePrediction() {
+    $Dao = betgame_prediction_dao();
+
+    $cid = 123;
+
+    $p1 = new Prediction();
+    $p1->setMatchid(1);
+    $p1->setUserid(1);
+    $p1->setScore(1);
+    $p1->setHome(5);
+    $p1->setGuest(2);
+    $Dao->storePrediction($cid, $p1);
+
+    $p = $Dao->findMatchPrediction($cid, 1, 1); 
+    $this->assertNotNull($p);
+    $this->assertEqual(get_class($p), 'Prediction');
+
+    if($p) {
+      $this->assertEqual($p->getCompetitionid(), 123);
+      $this->assertEqual($p->getUserid(), 1);
+      $this->assertEqual($p->getMatchid(), 1);
+      $this->assertEqual($p->getScore(), 1);
+      $this->assertEqual($p->getHome(), 5);
+      $this->assertEqual($p->getGuest(), 2);
+    }
+
   }
 
   public function testRanking() {
     $Dao = betgame_prediction_dao();
-    
+
     $cid = 123456;
 
     $p1 = new Prediction();
@@ -29,35 +57,138 @@ class BetgamePredictionTestCase extends DrupalWebTestCase {
     $p1->setUserid(1);
     $p1->setScore(1);
     $Dao->storePrediction($cid, $p1);
-    
+
     $p2 = new Prediction();
     $p2->setMatchid(2);
     $p2->setUserid(1);
     $p2->setScore(1);
     $Dao->storePrediction($cid, $p2);
-    
+
     $p3 = new Prediction();
     $p3->setMatchid(1);
     $p3->setUserid(2);
     $p3->setScore(3);
     $Dao->storePrediction($cid, $p3);
-    
+
     $p4 = new Prediction();
     $p4->setMatchid(1);
     $p4->setUserid(3);
     $p4->setScore(2);
     $Dao->storePrediction($cid, $p4);
     
-    //$this->verbose('rank of 1: ' . print_r($Dao->getUserRank($cid, 1), TRUE));
-    //$this->assertEqual($Dao->getUserRank($cid, 1), 2);
-    //$this->assertEqual($Dao->getUserRank($cid, 2), 1);
+    $p5 = new Prediction();
+    $p5->setMatchid(1);
+    $p5->setUserid(4);
+    $p5->setScore(0);
+    $Dao->storePrediction($cid, $p5);
+
+    $Dao->updateScores($cid);
+
+    $ranking = $Dao->findRankings($cid);
+    $this->verbose('rankings: ' . print_r($ranking, TRUE));
     
-    $rankings = $Dao->findRankings($cid, 1);
-    $this->verbose('rankings 1: ' . print_r($rankings, TRUE));
+    $this->assertEqual(count($ranking), 4);
+  
+    // check correctness of ranking order and data
     
-    $rankings2 = $Dao->findRankings($cid, 2);
-    $this->verbose('rankings 2: ' . print_r($rankings2, TRUE));
+    $this->assertEqual($ranking[0]->userid, 2);
+    $this->assertEqual($ranking[0]->score, 3);
+    $this->assertEqual($ranking[0]->rank, 1);
     
+    $this->assertEqual($ranking[1]->userid, 1);
+    $this->assertEqual($ranking[1]->score, 2);
+    $this->assertEqual($ranking[1]->rank, 2);
+    
+    $this->assertEqual($ranking[2]->userid, 3);
+    $this->assertEqual($ranking[2]->score, 2);
+    $this->assertEqual($ranking[2]->rank, 2);
+    
+    $this->assertEqual($ranking[3]->userid, 4);
+    $this->assertEqual($ranking[3]->score, 0);
+    $this->assertEqual($ranking[3]->rank, 4);
+    
+    // check correctness of get user ranking functions
+    
+    $this->assertEqual($Dao->getUserRanking($cid, 1), 2);
+    $this->assertEqual($Dao->getUserRanking($cid, 2), 1);
+    $this->assertEqual($Dao->getUserRanking($cid, 3), 2);
+    $this->assertEqual($Dao->getUserRanking($cid, 4), 4);
+
   }
+ 
+  function debug($data) {
+    $msg = '';
+    if(is_object($data)) {
+      $msg = var_export($data, true);
+    } else if(is_array($data)) {
+      $msg = print_r($data, true);
+    } else {
+      $msg = $data;
+    }
+    
+    if(true) {
+      echo $msg . "\n";
+    } else {
+      $this->verbose($msg);
+    }
+  }
+  
+  public function testRankingPerformance() {
+    $Dao = betgame_prediction_dao();
+  
+    $competitions = 5;
+    $users = 1000;
+    $matches = 20;
+  
+    for($cid = 1; $cid <= $competitions; $cid++) {
+      
+      for($uid = 1; $uid <= $users; $uid++) {
+        
+        for($matchid = 1; $matchid <= $matches; $matchid++) {
+          
+          $p = new Prediction();
+          $p->setMatchid($matchid);
+          $p->setUserid($uid);
+          $p->setScore(mt_rand(0, 3));
+          $p->setHome(mt_rand(0, 10));
+          $p->setGuest(mt_rand(0, 5));
+          
+          $Dao->storePrediction($cid, $p);
+          
+        }
+        if($cid % 100 == 0) {
+          $this->debug('Generation ' . $cid .' / ' . $uid . ' complete');
+          
+        }
+      }
+      
+    }
+    
+    for($cid = $competitions; $cid > 0 ; $cid--) {
+      $_upScores_s = microtime(TRUE);
+      $Dao->updateScores($cid);
+      
+      $_upScores_d = (microtime(true) - $_upScores_s);
+      $this->debug($cid . ' updating score takes: ' . sprintf('%.5f', $_upScores_d));
+      
+      $_ranking_s = microtime(TRUE);
+      $ranking = $Dao->findRankings($cid);
+      
+      $_ranking_d = (microtime(true) - $_ranking_s);
+      $this->debug($cid . ' get ranking takes: ' . sprintf('%.5f', $_ranking_d));
+      
+      $this->assertEqual(count($ranking), $users, 'amount of ranking rows in competition '.$cid);
+      $this->verbose($cid . ' rankings: ' . print_r($ranking, TRUE));
+      
+//       for($uid = 1; $uid <= $users; $uid++) {
+//         $_rankinguser_s = microtime(TRUE);
+//         $rank = $Dao->getUserRanking($cid, $uid);
+        
+//         $_rankinguser_d = (microtime(true) - $_rankinguser_s);
+//         $this->debug($cid . ' get user ' . $uid . ' ranking takes: ' . sprintf('%.5f', $_rankinguser_d));
+//       }
+    }
+  }
+  
 }
 
