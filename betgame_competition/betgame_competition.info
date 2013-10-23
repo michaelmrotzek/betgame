@@ -1,5 +1,5 @@
 name = "Betgame - Competition"
-description = ""
+description = "Manage competitions and display results on pages."
 package = "betgame"
 core = "7.x"
 dependencies[] = "betgame"
