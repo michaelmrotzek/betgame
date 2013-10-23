@@ -1,5 +1,5 @@
 name = "Betgame - Prediction"
-description = ""
+description = "Module enhances competition module to enable predictions by users"
 package = "betgame"
 core = "7.x"
 dependencies[] = "betgame_competition"

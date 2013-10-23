@@ -1,0 +1,130 @@
+<?php 
+
+/**
+ * Implements hook_schema().
+ */
+function betgame_matchplan_schema() {
+  $schema['betgame_matchplan'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'teams' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'groups' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'gamedays' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+    ),
+    'unique keys' => array(
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['betgame_matchplan_fixture'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'matchplan' => array(
+        'type' => 'int',
+      ),
+      'fixturetype' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'gamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'returnmatchgamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'gamedayindex' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegroup' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegroupsetposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'guestgroup' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'guestgroupsetposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegroupresultposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'guestgroupresultposition' => array(
+        'type' => 'int',
+        'default' => 0,
+      ),
+      'homegamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'guestgamenumber' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'type' => 'int',
+      ),
+    ),
+    'indexes' => array(
+      'igamenumber' =>  array('gamenumber'),
+    ),
+    'unique keys' => array(
+      'matchplan_gamenumber' => array('matchplan', 'gamenumber')
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+
+
+

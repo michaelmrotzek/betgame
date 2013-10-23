@@ -1,4 +1,4 @@
 name = "Betgame"
-description = ""
+description = "Basis betgame module offering basis infrastructure and hooks."
 package = "betgame"
 core = "7.x"

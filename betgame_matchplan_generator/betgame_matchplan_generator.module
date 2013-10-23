@@ -1,0 +1,32 @@
+<?php 
+
+/**
+ * Implements hook_menu().
+ */
+function betgame_matchplan_generator_menu() {
+  $items = array();
+
+//   $items['admin/config/betgame/matchplan/add'] = array(
+//      'title' => 'Add Matchplan',
+//      'description' => '',
+//      'page callback' => 'drupal_get_form',
+//      'page arguments' => array('betgame_matchplan_edit_form'),
+//      'access arguments' => array('administer matchplan'),
+//      'file' => 'betgame_matchplan.admin.inc',
+//      'type' => MENU_LOCAL_ACTION,
+//    );
+  
+//   $items['admin/config/betgame/matchplan/%matchplan/edit'] = array(
+//     'title' => 'Matchplan Admin',
+//     'description' => '',
+//     'page callback' => 'drupal_get_form',
+//     'page arguments' => array('betgame_matchplan_edit_form', 4),
+//     'access arguments' => array('administer matchplan'),
+//     'file' => 'betgame_matchplan.admin.inc',
+//     'type' => MENU_CALLBACK | MENU_VISIBLE_IN_BREADCRUMB,
+//   );
+  
+  return $items;
+}
+
+

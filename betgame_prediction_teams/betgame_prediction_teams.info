@@ -1,0 +1,6 @@
+name = "Betgame - Team Predictions"
+description = "Module enhances prediction module to enable predictions of several users in a team"
+package = "betgame"
+core = "7.x"
+dependencies[] = "betgame_prediction"
+

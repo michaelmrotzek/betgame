@@ -17,8 +17,8 @@ function betgame_menu() {
   $items = array();
 
   $items['admin/config/betgame'] = array(
-    'title' => 'Tipp Game',
-    'description' => '',
+    'title' => 'Betgame',
+    'description' => 'Administer betgames',
     'position' => 'right',
     'weight' => -100,
     'page callback' => 'system_admin_menu_block_page',
@@ -37,11 +37,11 @@ function betgame_menu() {
 function betgame_permission() {
   return array(
     'access betgame' => array(
-      'title' => t('Access tipp games'),
+      'title' => t('Access bet games'),
       'description' => t(''),
     ),
     'administer betgame' => array(
-      'title' => t('Administer tipp games'),
+      'title' => t('Administer bet games'),
       'description' => t(''),
     ),
   );

@@ -2,11 +2,11 @@
 
 /**
  * @file
- * Hooks provided by the Tippgame module.
+ * Hooks provided by the Betgame module.
  */
 
 /**
- * Hook called AFTER an entoity has been created. It also contains the new entities id. 
+ * Hook called AFTER an entity has been created. It also contains the new entities id. 
  * 
  * @param IEntity $entity
  */

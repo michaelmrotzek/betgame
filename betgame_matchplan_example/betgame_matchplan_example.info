@@ -1,0 +1,5 @@
+name = "Betgame - Matchplan Examples"
+description = "Module including some basic matchplans"
+package = "betgame"
+core = "7.x"
+dependencies[] = "betgame_matchplan"

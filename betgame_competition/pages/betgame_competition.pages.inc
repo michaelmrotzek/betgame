@@ -316,9 +316,9 @@ function theme_betgame_competition_team_placeholder($variables) {
 
     if ($placeholder instanceof PlaceholderGroupResult) {
       $group = betgame_competition_controller()->getGroupByIndex($competition_id, $placeholder->groupindex);
-
-      $output .= t('@position @group', array('@position' => $placeholder->groupposition.'.', '@group' => ($useShortname ? $group->getShortname() : $group->getName())));
-
+      if($group) {
+        $output .= t('@position @group', array('@position' => $placeholder->groupposition.'.', '@group' => ($useShortname ? $group->getShortname() : $group->getName())));
+      }
     }
     if ($placeholder instanceof PlaceholderGameResult) {
       $output .= t('Winner game @gamenumber', array('@gamenumber' => $placeholder->gamenumber));

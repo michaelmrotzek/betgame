@@ -1,5 +1,5 @@
 name = "Betgame - Matchplan"
-description = "Module to generate tournament matchplans"
+description = "Module for managing abstract matchplans"
 package = "betgame"
 core = "7.x"
 dependencies[] = "betgame"

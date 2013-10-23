@@ -1,0 +1,5 @@
+name = "Betgame - Matchplan Generator"
+description = "Module to generate custom tournament matchplans"
+package = "betgame"
+core = "7.x"
+dependencies[] = "betgame_matchplan"
