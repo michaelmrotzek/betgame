@@ -6,7 +6,7 @@ Betgame Drupal 7 module
 Module descriptions
 -------------------
 
-![Module structure](https://github.com/michaelmrotzek/betgame/raw/master/doc/modulestructure.png "Modules, Submodules and dependencies")
+![Module structure](https://raw.github.com/michaelmrotzek/betgame/master/doc/modulstructure.png "Modules, Submodules and dependencies")
 
 ### Betgame
 `betgame`: Basis betgame module offering basis infrastructure and hooks.
